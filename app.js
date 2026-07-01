@@ -10,6 +10,14 @@ function init() {
   const GRID = 10;   // snappning i px
   const RADIUS = 25; // rundningsradie i px
 
+  const MIN_LENGTH_MM = 50;
+  const MAX_LENGTH_MM = 10000;
+  const MIN_DEPTH_MM = 10;
+  const MAX_DEPTH_MM = 2000;
+
+  const WALL_MIN_LENGTH_MM = 100;
+  const WALL_MAX_LENGTH_MM = 12000;
+
   const canvasEl = document.getElementById("canvas-container");
 
   const stage = new Konva.Stage({
@@ -33,7 +41,7 @@ function init() {
   const layer = new Konva.Layer();
   stage.add(layer);
 
-  let parts = [];      // { id, type, group, rect, text, data }
+  let parts = [];      // { id, type, group, rect, lengthText, depthText, handles, data }
   let selected = null;
   let nextId = 1;
 
@@ -45,10 +53,18 @@ function init() {
     return mm / SCALE;
   }
 
+  function pxToMm(px) {
+    return Math.round((px * SCALE) / 10) * 10; // avrundat till närmaste 10 mm
+  }
+
   function typeLabel(type) {
     if (type === "countertop") return "Bänkskiva";
     if (type === "splash") return "Stänkskydd";
     return "Vägg";
+  }
+
+  function isWallType(type) {
+    return type === "wall";
   }
 
   function defaultData(type) {
@@ -65,6 +81,10 @@ function init() {
     };
   }
 
+  function setCursor(cursor) {
+    stage.container().style.cursor = cursor;
+  }
+
   // ===================================
   // CREATE PART
   // ===================================
@@ -74,6 +94,7 @@ function init() {
     if (data.id === undefined || data.id === null) data.id = nextId++;
     if (data.id >= nextId) nextId = data.id + 1;
 
+    const wall = isWallType(type);
     const w = mmToPx(data.length);
     const h = mmToPx(data.depth);
 
@@ -89,28 +110,43 @@ function init() {
     const rect = new Konva.Rect({
       width: w,
       height: h,
-      fill: type === "wall" ? "#64748b" : "#ffffff",
+      fill: wall ? "#64748b" : "#ffffff",
       stroke: "#1e293b",
       strokeWidth: 2,
       cornerRadius: 0
     });
 
-    const text = new Konva.Text({
-      fontSize: 13,
-      fill: "#1e293b",
-      align: "center"
-    });
-
     group.add(rect);
-    group.add(text);
 
-    const item = { id: data.id, type, group, rect, text, data };
+    let lengthText = null;
+    let depthText = null;
+
+    if (!wall) {
+      // Längd visas ovanför (horisontell sida), djup visas till höger (lodrät sida)
+      lengthText = new Konva.Text({
+        fontSize: 12,
+        fill: "#475569",
+        align: "center"
+      });
+      depthText = new Konva.Text({
+        fontSize: 12,
+        fill: "#475569",
+        align: "left"
+      });
+      group.add(lengthText);
+      group.add(depthText);
+    }
+
+    const item = { id: data.id, type, group, rect, lengthText, depthText, data, handles: null };
     parts.push(item);
 
     applyCorners(item);
-    if (type !== "wall") {
+
+    if (!wall) {
       updateMeasure(item);
       drawEdges(item);
+    } else {
+      item.handles = createWallHandles(item);
     }
 
     group.on("click tap", (e) => {
@@ -118,10 +154,21 @@ function init() {
       selectItem(item);
     });
 
+    group.on("mouseenter", () => {
+      if (item !== selected) rect.stroke("#64748b");
+      setCursor("move");
+      layer.batchDraw();
+    });
+
+    group.on("mouseleave", () => {
+      if (item !== selected) rect.stroke("#1e293b");
+      setCursor("default");
+      layer.batchDraw();
+    });
+
     group.on("dragmove", () => {
       group.x(Math.round(group.x() / GRID) * GRID);
       group.y(Math.round(group.y() / GRID) * GRID);
-      updateMeasure(item);
       layer.batchDraw();
     });
 
@@ -150,6 +197,13 @@ function init() {
       const isSelected = p === item;
       p.rect.stroke(isSelected ? "#2563eb" : "#1e293b");
       p.rect.strokeWidth(isSelected ? 4 : 2);
+
+      if (p.handles) {
+        p.handles.left.visible(isSelected);
+        p.handles.left.listening(isSelected);
+        p.handles.right.visible(isSelected);
+        p.handles.right.listening(isSelected);
+      }
     });
 
     layer.draw();
@@ -158,20 +212,25 @@ function init() {
   }
 
   // ===================================
-  // MEASUREMENTS
+  // MEASUREMENTS (längd ovanför, djup till höger)
   // ===================================
 
   function updateMeasure(item) {
-    const { rect, text, data } = item;
-    text.text(`${data.length} × ${data.depth} mm`);
-    text.width(rect.width());
-    text.align("center");
-    text.x(0);
-    text.y(-22);
+    if (item.type === "wall") return; // väggar visar inga mått
+    const { rect, lengthText, depthText, data } = item;
+
+    lengthText.text(`${data.length} mm`);
+    lengthText.width(rect.width());
+    lengthText.x(0);
+    lengthText.y(-18);
+
+    depthText.text(`${data.depth} mm`);
+    depthText.x(rect.width() + 8);
+    depthText.y(rect.height() / 2 - 6);
   }
 
   // ===================================
-  // RESIZE
+  // RESIZE (från egenskapspanelen)
   // ===================================
 
   function resizePart(item) {
@@ -189,6 +248,8 @@ function init() {
     if (type !== "wall") {
       updateMeasure(item);
       drawEdges(item);
+    } else if (item.handles) {
+      positionWallHandles(item);
     }
 
     layer.draw();
@@ -245,19 +306,166 @@ function init() {
   }
 
   // ===================================
-  // LIST
+  // VÄGG: DRA UT I SIDORNA
+  // ===================================
+
+  function createWallHandles(item) {
+    const { group, rect } = item;
+    const h = rect.height();
+
+    const handleStyle = {
+      width: 10,
+      height: 18,
+      fill: "#2563eb",
+      cornerRadius: 3,
+      draggable: true,
+      visible: false,
+      listening: false,
+      offsetX: 5,
+      offsetY: 9
+    };
+
+    const left = new Konva.Rect(Object.assign({ x: 0, y: h / 2 }, handleStyle));
+    const right = new Konva.Rect(Object.assign({ x: rect.width(), y: h / 2 }, handleStyle));
+
+    group.add(left);
+    group.add(right);
+
+    let dragTooltip = null;
+
+    function showTooltip(text, x, y) {
+      if (!dragTooltip) {
+        dragTooltip = new Konva.Label({ x, y, listening: false });
+        dragTooltip.add(
+          new Konva.Tag({ fill: "#1e293b", cornerRadius: 4 })
+        );
+        dragTooltip.add(
+          new Konva.Text({
+            text,
+            fontSize: 12,
+            padding: 5,
+            fill: "#fff"
+          })
+        );
+        layer.add(dragTooltip);
+      } else {
+        dragTooltip.getText().text(text);
+        dragTooltip.position({ x, y });
+      }
+      dragTooltip.moveToTop();
+    }
+
+    function hideTooltip() {
+      if (dragTooltip) {
+        dragTooltip.destroy();
+        dragTooltip = null;
+      }
+    }
+
+    // --- Höger handtag: flyttar bara höger kant ---
+    right.on("dragmove", () => {
+      right.y(h / 2); // lås lodrät rörelse
+      const minW = mmToPx(WALL_MIN_LENGTH_MM);
+      const maxW = mmToPx(WALL_MAX_LENGTH_MM);
+      const newW = Math.min(maxW, Math.max(minW, right.x()));
+      right.x(newW);
+
+      rect.width(newW);
+      item.data.length = pxToMm(newW);
+
+      const abs = right.getAbsolutePosition();
+      showTooltip(`${item.data.length} mm`, abs.x + 12, abs.y - 30);
+
+      layer.batchDraw();
+    });
+
+    right.on("dragend", () => {
+      hideTooltip();
+      syncLengthInput(item);
+      layer.draw();
+    });
+
+    right.on("mouseenter", () => setCursor("ew-resize"));
+    right.on("mouseleave", () => setCursor("default"));
+
+    // --- Vänster handtag: flyttar vänster kant, håller höger kant still ---
+    left.on("dragmove", () => {
+      left.y(h / 2); // lås lodrät rörelse
+
+      const maxExtend = mmToPx(WALL_MAX_LENGTH_MM) - rect.width();
+      const minLocalX = -maxExtend;
+      const maxLocalX = rect.width() - mmToPx(WALL_MIN_LENGTH_MM);
+      const localX = Math.min(maxLocalX, Math.max(minLocalX, left.x()));
+      left.x(localX);
+
+      const newW = rect.width() - localX;
+
+      // Håll höger kant fixerad i absoluta koordinater genom att
+      // flytta gruppen längs sin egen (ev. roterade) x-axel.
+      const rot = (group.rotation() * Math.PI) / 180;
+      const dx = localX * Math.cos(rot);
+      const dy = localX * Math.sin(rot);
+
+      group.x(group.x() + dx);
+      group.y(group.y() + dy);
+
+      rect.width(newW);
+      right.x(newW);
+      left.x(0);
+
+      item.data.length = pxToMm(newW);
+
+      const abs = left.getAbsolutePosition();
+      showTooltip(`${item.data.length} mm`, abs.x + 12, abs.y - 30);
+
+      layer.batchDraw();
+    });
+
+    left.on("dragend", () => {
+      hideTooltip();
+      // snappa gruppens position till rutnätet efter förflyttningen
+      group.x(Math.round(group.x() / GRID) * GRID);
+      group.y(Math.round(group.y() / GRID) * GRID);
+      syncLengthInput(item);
+      layer.draw();
+    });
+
+    left.on("mouseenter", () => setCursor("ew-resize"));
+    left.on("mouseleave", () => setCursor("default"));
+
+    return { left, right };
+  }
+
+  function positionWallHandles(item) {
+    if (!item.handles) return;
+    const h = item.rect.height();
+    item.handles.left.position({ x: 0, y: h / 2 });
+    item.handles.right.position({ x: item.rect.width(), y: h / 2 });
+  }
+
+  // Uppdaterar längdfältet i egenskapspanelen live om väggen just nu är vald
+  function syncLengthInput(item) {
+    if (selected !== item) return;
+    const input = document.getElementById("editLength");
+    if (input) input.value = item.data.length;
+  }
+
+  // ===================================
+  // LIST (väggar visas inte här)
   // ===================================
 
   function updateList() {
     const list = document.getElementById("objectList");
     list.innerHTML = "";
 
-    if (parts.length === 0) {
+    const visibleParts = parts.filter((p) => p.type !== "wall");
+
+    if (visibleParts.length === 0) {
       list.innerHTML = '<p class="empty">Inga objekt ännu</p>';
       return;
     }
 
-    parts.forEach((p) => {
+    visibleParts.forEach((p) => {
       const d = p.data;
 
       const item = document.createElement("div");
@@ -289,15 +497,17 @@ function init() {
 
     const d = item.data;
     const isWall = item.type === "wall";
+    const lenMin = isWall ? WALL_MIN_LENGTH_MM : MIN_LENGTH_MM;
+    const lenMax = isWall ? WALL_MAX_LENGTH_MM : MAX_LENGTH_MM;
 
     box.innerHTML = `
       <h3>${typeLabel(d.type)}</h3>
 
       <label class="field-label" for="editLength">Längd (mm)</label>
-      <input id="editLength" type="number" min="50" max="10000" step="10" value="${d.length}">
+      <input id="editLength" type="number" min="${lenMin}" max="${lenMax}" step="10" value="${d.length}">
 
-      <label class="field-label" for="editDepth">Djup (mm)</label>
-      <input id="editDepth" type="number" min="10" max="2000" step="10" value="${d.depth}">
+      <label class="field-label" for="editDepth">Djup${isWall ? " / tjocklek" : ""} (mm)</label>
+      <input id="editDepth" type="number" min="${MIN_DEPTH_MM}" max="${MAX_DEPTH_MM}" step="10" value="${d.depth}">
 
       ${
         !isWall
@@ -323,7 +533,7 @@ function init() {
         <label><input type="checkbox" id="bl" ${d.corners.bl ? "checked" : ""}> Nedre vänster</label>
         <label><input type="checkbox" id="br" ${d.corners.br ? "checked" : ""}> Nedre höger</label>
       `
-          : ""
+          : `<p class="hint">Tips: dra i de blå handtagen på väggens sidor i ritytan för att ändra längd direkt.</p>`
       }
 
       <div class="prop-actions">
@@ -344,14 +554,14 @@ function init() {
     `;
 
     document.getElementById("editLength").onchange = (e) => {
-      const v = clamp(parseInt(e.target.value, 10) || d.length, 50, 10000);
+      const v = clamp(parseInt(e.target.value, 10) || d.length, lenMin, lenMax);
       d.length = v;
       e.target.value = v;
       resizePart(item);
     };
 
     document.getElementById("editDepth").onchange = (e) => {
-      const v = clamp(parseInt(e.target.value, 10) || d.depth, 10, 2000);
+      const v = clamp(parseInt(e.target.value, 10) || d.depth, MIN_DEPTH_MM, MAX_DEPTH_MM);
       d.depth = v;
       e.target.value = v;
       resizePart(item);
@@ -443,7 +653,8 @@ function init() {
 
     if (e.key === "Delete" || e.key === "Backspace") {
       e.preventDefault();
-      document.getElementById("deleteBtn") && document.getElementById("deleteBtn").click();
+      const btn = document.getElementById("deleteBtn");
+      if (btn) btn.click();
     }
   });
 
