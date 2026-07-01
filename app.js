@@ -40,6 +40,18 @@ function init() {
 
   const layer = new Konva.Layer();
   stage.add(layer);
+  const selectionRect = new Konva.Rect({
+  fill: "rgba(37,99,235,0.15)",
+  stroke: "#2563eb",
+  strokeWidth: 1,
+  visible:false
+});
+
+layer.add(selectionRect);
+
+
+let selectionStart = null;
+let multiSelected = [];
 
   let parts = [];      // { id, type, group, rect, lengthText, depthText, handles, data }
   let selected = null;
@@ -217,7 +229,34 @@ function deselectAll(){
 
     
     group.on("dragmove", () => {
+if(multiSelected.length > 1){
 
+ const dx =
+ group.x()-group.startX;
+
+ const dy =
+ group.y()-group.startY;
+
+
+ multiSelected.forEach(p=>{
+
+   if(p.group===group)return;
+
+
+   p.group.x(
+    p.group.x()+dx
+   );
+
+
+   p.group.y(
+    p.group.y()+dy
+   );
+
+
+ });
+
+
+}
 
   let dx = group.x() - group.startX;
   let dy = group.y() - group.startY;
@@ -280,8 +319,101 @@ layer.draw();
   stage.on("click tap", (e) => {
     if (e.target === stage || e.target === background) {
       selectItem(null);
+      
     }
   });
+  stage.on("mousedown", (e)=>{
+
+  if(e.target !== stage && e.target !== background) return;
+
+
+  selectionStart = stage.getPointerPosition();
+
+
+  selectionRect.visible(true);
+
+  selectionRect.position(selectionStart);
+
+  selectionRect.width(0);
+  selectionRect.height(0);
+
+});
+
+
+
+stage.on("mousemove", ()=>{
+
+ if(!selectionStart) return;
+
+
+ const pos = stage.getPointerPosition();
+
+
+ selectionRect.setAttrs({
+
+   x: Math.min(pos.x, selectionStart.x),
+   y: Math.min(pos.y, selectionStart.y),
+
+   width: Math.abs(pos.x-selectionStart.x),
+   height: Math.abs(pos.y-selectionStart.y)
+
+ });
+
+
+ layer.batchDraw();
+
+});
+
+
+
+stage.on("mouseup", ()=>{
+
+
+ if(!selectionStart) return;
+
+
+ const box =
+ selectionRect.getClientRect();
+
+
+ multiSelected=[];
+
+
+ parts.forEach(p=>{
+
+
+   const itemBox =
+   p.group.getClientRect();
+
+
+
+   if(
+    Konva.Util.haveIntersection(
+      box,
+      itemBox
+    )
+   ){
+
+      multiSelected.push(p);
+
+      p.rect.stroke("#2563eb");
+      p.rect.strokeWidth(4);
+
+   }
+
+
+ });
+
+
+ selectionRect.visible(false);
+
+
+ selectionStart=null;
+
+
+ layer.draw();
+
+});
 
   // ===================================
   // SELECT
