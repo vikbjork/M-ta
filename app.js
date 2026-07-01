@@ -971,24 +971,38 @@ group.add(right);
 
 right.on("dragmove",()=>{
 
+
 right.y(rect.height()/2);
 
-let nw=clamp(
- right.x(),
- mmToPx(WALL_MIN_LENGTH_MM),
- mmToPx(WALL_MAX_LENGTH_MM)
+
+let min = mmToPx(WALL_MIN_LENGTH_MM);
+let max = mmToPx(WALL_MAX_LENGTH_MM);
+
+
+// aktuell bredd + handtagets rörelse
+let nw = right.x();
+
+
+nw = clamp(
+    nw,
+    min,
+    max
 );
 
-right.x(nw);
 
 rect.width(nw);
 
-item.data.length=pxToMm(nw);
+
+right.x(nw);
+
+
+item.data.length = pxToMm(nw);
+
+
 
 layer.batchDraw();
 
 });
-
 
 
 left.on("dragmove",()=>{
