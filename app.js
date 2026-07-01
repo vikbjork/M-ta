@@ -313,7 +313,7 @@ function fitCanvas(){
 
 function addPart(type,savedData){ 
 
-saveState();
+
 
 const data=savedData || defaultData(type);
 
@@ -971,7 +971,6 @@ group.add(right);
 
 right.on("dragmove",()=>{
 
-
 right.y(rect.height()/2);
 
 
@@ -979,12 +978,8 @@ let min = mmToPx(WALL_MIN_LENGTH_MM);
 let max = mmToPx(WALL_MAX_LENGTH_MM);
 
 
-// aktuell bredd + handtagets rörelse
-let nw = right.x();
-
-
-nw = clamp(
-    nw,
+let nw = clamp(
+    right.x(),
     min,
     max
 );
@@ -992,12 +987,9 @@ nw = clamp(
 
 rect.width(nw);
 
-
 right.x(nw);
 
-
 item.data.length = pxToMm(nw);
-
 
 
 layer.batchDraw();
@@ -1005,41 +997,47 @@ layer.batchDraw();
 });
 
 
+
 left.on("dragmove",()=>{
+
 
 left.y(rect.height()/2);
 
 
-let newX=Math.max(
-0,
-left.x()
+let oldWidth = rect.width();
+
+
+let newX = clamp(
+    left.x(),
+    0,
+    oldWidth - mmToPx(WALL_MIN_LENGTH_MM)
 );
 
 
-let newWidth =
-rect.width()-newX;
+let newWidth = oldWidth - newX;
 
 
-newWidth=clamp(
-newWidth,
-mmToPx(WALL_MIN_LENGTH_MM),
-mmToPx(WALL_MAX_LENGTH_MM)
+newWidth = clamp(
+    newWidth,
+    mmToPx(WALL_MIN_LENGTH_MM),
+    mmToPx(WALL_MAX_LENGTH_MM)
 );
+
 
 
 group.x(
-group.x()+newX
+    group.x() + newX
 );
 
 
 rect.width(newWidth);
 
 
-item.data.length=pxToMm(newWidth);
-
-
 left.x(0);
 right.x(newWidth);
+
+
+item.data.length = pxToMm(newWidth);
 
 
 layer.batchDraw();
@@ -1058,59 +1056,6 @@ return {
 };
 
 }
-
-
-
-
-function positionWallHandles(item){
-
-
-if(!item.handles)return;
-
-
-item.handles.left.position({
-
-x:0,
-
-y:item.rect.height()/2
-
-});
-
-
-item.handles.right.position({
-
-x:item.rect.width(),
-
-y:item.rect.height()/2
-
-});
-
-
-}
-
-
-
-
-
-
-function syncLengthInput(item){
-
-
-if(selected!==item)return;
-
-
-const input=
-document.getElementById("editLength");
-
-
-if(input)
- input.value=item.data.length;
-
-
-}
-
-
-
 
 
 
@@ -1788,6 +1733,13 @@ renderProperties(null);
 layer.draw();
 
 
+ 
+}
+
+
+});
+
+
 window.addEventListener("keydown",e=>{
 
 if(
@@ -1802,14 +1754,6 @@ undo();
 }
 
 });
- 
-}
-
-
-});
-
-
-
 
 
 
