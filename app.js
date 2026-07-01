@@ -56,8 +56,7 @@ let multiSelected = [];
   let parts = [];      // { id, type, group, rect, lengthText, depthText, handles, data }
   let selected = null;
   let nextId = 1;
-  let allSelected = false;
-  let movingAll = false;
+ 
 
   // ===================================
   // HELPERS
@@ -173,21 +172,10 @@ mmToPx(data.depth);
     group.on("click tap", (e) => {
       e.cancelBubble = true;
       selectItem(item);
-      function selectAll(){
-
-  allSelected = true;
-
-  parts.forEach((p)=>{
-
-    p.rect.stroke("#2563eb");
-    p.rect.strokeWidth(4);
-
-  });
-
-  updateList();
-  layer.draw();
-
-}
+      group.on("click tap", (e) => {
+  e.cancelBubble = true;
+  selectItem(item);
+});
 
 
 
@@ -232,62 +220,36 @@ function deselectAll(){
 });
 
     
-    group.on("dragmove", () => {
-
-  if(multiSelected.length > 1 && multiSelected[0] === item){
-
-  const dx = group.x() - group.startX;
-  const dy = group.y() - group.startY;
+  group.on("dragmove", () => {
 
 
-  multiSelected.forEach(p => {
-
-    if(p === item) return;
+  if(multiSelected.length > 1 && multiSelected.includes(item)){
 
 
-    p.group.x(
-      p.startX + dx
-    );
+    const dx =
+    group.x() - group.startX;
 
 
-    p.group.y(
-      p.startY + dy
-    );
+    const dy =
+    group.y() - group.startY;
 
 
-  });
+    multiSelected.forEach(p=>{
 
-}
-
-
-  let dx = group.x() - group.startX;
-  let dy = group.y() - group.startY;
-
-
-  if(allSelected && !movingAll){
-
-    movingAll = true;
-
-
-    parts.forEach((p)=>{
-
-      if(p.group === group) return;
+      if(p === item) return;
 
 
       p.group.x(
-        p.group.x()+dx
+        p.startX + dx
       );
 
 
       p.group.y(
-        p.group.y()+dy
+        p.startY + dy
       );
 
 
     });
-
-
-    movingAll=false;
 
   }
 
@@ -884,15 +846,7 @@ mmToPx(data.depth);
   // ===================================
 
   window.addEventListener("keydown", (e) => {
-    if(e.ctrlKey && e.key.toLowerCase()==="a"){
-
-  e.preventDefault();
-
-  selectAll();
-
-  return;
-
-}
+  
     const tag = document.activeElement && document.activeElement.tagName;
     const typing = tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA";
     if (typing || !selected) return;
