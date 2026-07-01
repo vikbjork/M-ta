@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", init);
 
 function init() {
   const SCALE = 5;   // 1 mm = 1/3 px
-  const GRID = 10;   // snappning i px
+  const GRID = 3;   // snappning i px
   const RADIUS = 25; // rundningsradie i px
 
   const MIN_LENGTH_MM = 50;
