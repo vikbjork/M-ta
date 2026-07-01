@@ -6,7 +6,7 @@
 document.addEventListener("DOMContentLoaded", init);
 
 function init() {
-  const SCALE = 3;   // 1 mm = 1/3 px
+  const SCALE = 5;   // 1 mm = 1/3 px
   const GRID = 10;   // snappning i px
   const RADIUS = 25; // rundningsradie i px
 
@@ -173,7 +173,10 @@ function init() {
     });
 
     layer.add(group);
-    layer.draw();
+
+fitCanvas();
+
+layer.draw();
     updateList();
 
     return item;
@@ -771,5 +774,62 @@ function init() {
     background.height(stage.height());
     layer.draw();
     gridLayer.draw();
+    function fitCanvas(){
+
+    if(parts.length === 0) return;
+
+
+    let box = layer.getClientRect({
+        skipTransform:true
+    });
+
+
+    let padding = 120;
+
+
+    let scaleX =
+    stage.width() /
+    (box.width + padding);
+
+
+    let scaleY =
+    stage.height() /
+    (box.height + padding);
+
+
+    let scale =
+    Math.min(scaleX, scaleY, 1);
+
+
+
+    stage.scale({
+        x:scale,
+        y:scale
+    });
+
+
+
+    stage.position({
+
+        x:
+        (stage.width() -
+        box.width*scale)/2
+        -
+        box.x*scale,
+
+
+        y:
+        (stage.height() -
+        box.height*scale)/2
+        -
+        box.y*scale
+
+    });
+
+
+
+    stage.batchDraw();
+
+}
   });
 }
