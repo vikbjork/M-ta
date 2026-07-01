@@ -1,298 +1,834 @@
-// =====================================
-// KÖKSSKIVA RITVERKTYG
-// APP.JS
-// =====================================
-
-
 window.addEventListener("DOMContentLoaded", () => {
 
 
-    const container = document.getElementById("canvas-container");
+const container =
+document.getElementById("canvas-container");
 
 
-    const stage = new Konva.Stage({
+const stage =
+new Konva.Stage({
 
-        container: container,
+container:"canvas-container",
 
-        width: container.clientWidth,
+width:container.clientWidth,
 
-        height: container.clientHeight
+height:container.clientHeight
 
-    });
+});
 
 
-    const layer = new Konva.Layer();
+const layer =
+new Konva.Layer();
 
-    stage.add(layer);
 
+stage.add(layer);
 
 
-    let objects = [];
 
-    let idCounter = 1;
+let objects=[];
 
+let selected=null;
 
+let counter=1;
 
-    const addCountertop =
-        document.getElementById("addCountertop");
 
-    const addSplash =
-        document.getElementById("addSplash");
 
-    const addWall =
-        document.getElementById("addWall");
+// ---------------------
+// GRID SNAP
+// ---------------------
 
+function snap(value){
 
+return Math.round(value / 10) * 10;
 
-    addCountertop.onclick = () => {
-        createPart("Bänkskiva");
-    };
+}
 
 
-    addSplash.onclick = () => {
-        createPart("Stänkskydd");
-    };
 
 
-    addWall.onclick = () => {
-        createPart("Vägg");
-    };
+stage.on("click", e=>{
 
+if(e.target === stage){
 
+selected=null;
 
+layer.draw();
 
+}
 
-    function createPart(type){
+});
 
 
-        let width = 300;
-        let height = 100;
 
 
 
-        if(type === "Bänkskiva"){
+// ---------------------
+// BUTTONS
+// ---------------------
 
-            width = 500;
-            height = 130;
 
-        }
+document
+.getElementById("addCountertop")
+.onclick=()=>createPart("Bänkskiva");
 
 
-        if(type === "Stänkskydd"){
+document
+.getElementById("addSplash")
+.onclick=()=>createPart("Stänkskydd");
 
-            width = 500;
-            height = 60;
 
-        }
+document
+.getElementById("addWall")
+.onclick=()=>createPart("Vägg");
 
 
-        if(type === "Vägg"){
 
-            width = 400;
-            height = 10;
 
-        }
 
 
+// ---------------------
+// CREATE
+// ---------------------
 
-        const rect = new Konva.Rect({
 
-            x:200,
+function createPart(type){
 
-            y:150,
 
-            width:width,
+let data={
 
-            height:height,
 
-            fill:
-            type==="Vägg"
-            ?
-            "#94a3b8"
-            :
-            "#ffffff",
+id:counter++,
 
+type,
 
-            stroke:"#1e293b",
 
-            strokeWidth:2,
+length:
+type==="Vägg"
+?1200
+:2400,
 
-            draggable:true,
 
-            cornerRadius:6
+depth:
+type==="Vägg"
+?10
+:620,
 
-        });
 
+edgeProfile:"Rak",
 
 
-        rect.data = {
+edgeSides:{
 
-            id:idCounter++,
+top:false,
+bottom:false,
+left:false,
+right:false
 
-            type:type,
+},
 
-            width:width,
 
-            height:height,
 
-            edge:"",
-            
-            roundedCorners:[],
+corners:{
 
-            done:false
+tl:false,
+tr:false,
+bl:false,
+br:false
 
-        };
+},
 
 
+rotation:0,
 
 
-        rect.on("click",()=>{
+done:false
 
-            showInfo(rect);
 
-        });
+};
 
 
 
-        layer.add(rect);
 
-        layer.draw();
 
 
+let group =
+new Konva.Group({
 
-        objects.push(rect);
+x:200,
 
+y:200,
 
-        updateList();
+draggable:true
 
+});
 
-    }
 
 
 
 
+let rect =
+new Konva.Rect({
 
 
+width:data.length/3,
 
-    function updateList(){
+height:data.depth/3,
 
 
-        const list =
-        document.getElementById("objectList");
+fill:
+type==="Vägg"
+?
+"#94a3b8"
+:
+"#ffffff",
 
 
-        list.innerHTML="";
+stroke:"#1e293b",
 
+strokeWidth:2,
 
 
-        objects.forEach(obj=>{
+cornerRadius:0
 
 
-            const div =
-            document.createElement("div");
+});
 
 
-            div.style.background="#fff";
 
-            div.style.padding="8px";
 
-            div.style.marginBottom="6px";
+rect.data=data;
 
-            div.style.borderRadius="8px";
 
 
-            div.innerHTML =
-            `
-            ${obj.data.type}
-            #${obj.data.id}
-            <br>
-            ${obj.data.width} x ${obj.data.height}
-            `;
 
 
+let measures =
+new Konva.Group();
 
-            list.appendChild(div);
 
+let topText =
+new Konva.Text({
 
+fontSize:14,
 
-        });
+fill:"#1e293b"
 
+});
 
-    }
 
+let sideText =
+new Konva.Text({
 
+fontSize:14,
 
+fill:"#1e293b"
 
+});
 
 
-    function showInfo(obj){
 
 
-        const box =
-        document.getElementById("propertiesContent");
 
+measures.add(topText);
 
-        box.innerHTML =
-        `
+measures.add(sideText);
 
-        <b>${obj.data.type}</b>
 
-        <br><br>
 
-        Längd:
-        <input value="${obj.data.width}">
 
 
-        <br><br>
+group.add(rect);
 
+group.add(measures);
 
-        Mått:
-        ${obj.data.width} x ${obj.data.height}
 
 
-        <br><br>
 
 
-        Kantprofil:
-        <input placeholder="t.ex Rak">
+applyCorners(rect);
 
 
-        <br><br>
+updateMeasures(group);
 
 
-        Rundade hörn:
-        <br>
 
-        □ Övre vänster
-        <br>
-        □ Övre höger
-        <br>
-        □ Nedre vänster
-        <br>
-        □ Nedre höger
 
 
-        `;
+group.on("click",()=>select(group));
 
 
-    }
 
 
 
+group.on("dragmove",()=>{
 
 
+group.x(
+snap(group.x())
+);
 
-    window.addEventListener("resize",()=>{
 
+group.y(
+snap(group.y())
+);
 
-        stage.width(container.clientWidth);
 
-        stage.height(container.clientHeight);
 
-        stage.draw();
+updateMeasures(group);
 
 
-    });
+});
+
+
+
+
+
+layer.add(group);
+
+
+objects.push(group);
+
+
+layer.draw();
+
+
+updateList();
+
+
+}
+
+
+
+
+
+
+
+// ---------------------
+// CORNERS + EDGE
+// ---------------------
+
+
+function applyCorners(rect){
+
+
+let c=rect.data.corners;
+
+
+let radius=0;
+
+
+if(
+c.tl ||
+c.tr ||
+c.bl ||
+c.br
+){
+
+radius=25;
+
+}
+
+
+rect.cornerRadius(radius);
+
+
+
+if(rect.data.type==="Vägg"){
+
+rect.cornerRadius(0);
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+
+
+// ---------------------
+// MEASUREMENTS
+// ---------------------
+
+
+function updateMeasures(group){
+
+
+
+let rect =
+group.getChildren()[0];
+
+
+let measure =
+group.getChildren()[1];
+
+
+let texts =
+measure.getChildren();
+
+
+
+texts[0].text(
+rect.data.length+" mm"
+);
+
+
+texts[0].x(
+rect.width()/2-40
+);
+
+
+texts[0].y(-25);
+
+
+
+
+
+texts[1].text(
+rect.data.depth+" mm"
+);
+
+
+
+texts[1].x(
+rect.width()+15
+);
+
+
+texts[1].y(
+rect.height()/2
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ---------------------
+// SELECT
+// ---------------------
+
+
+function select(group){
+
+
+selected=group;
+
+
+objects.forEach(o=>{
+
+
+o.getChildren()[0]
+.strokeWidth(
+o===group ? 4:2
+);
+
+
+});
+
+
+
+showProperties(group);
+
+
+layer.draw();
+
+}
+
+
+
+
+
+
+
+
+// ---------------------
+// LIST
+// ---------------------
+
+
+function updateList(){
+
+
+let list =
+document.getElementById("objectList");
+
+
+list.innerHTML="";
+
+
+
+objects.forEach(o=>{
+
+
+let d=o.getChildren()[0].data;
+
+
+
+let item =
+document.createElement("div");
+
+
+item.style.background="#fff";
+
+item.style.padding="8px";
+
+item.style.marginBottom="6px";
+
+item.style.borderRadius="8px";
+
+
+
+item.innerHTML=
+
+`
+<b>${d.type}</b>
+
+<br>
+
+${d.length} x ${d.depth}
+
+${d.done ? " ✓":""}
+
+`;
+
+
+
+item.onclick=()=>select(o);
+
+
+list.appendChild(item);
+
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+
+// ---------------------
+// PROPERTIES
+// ---------------------
+
+
+function showProperties(group){
+
+
+let rect =
+group.getChildren()[0];
+
+
+let d=rect.data;
+
+
+
+let box =
+document.getElementById("propertiesContent");
+
+
+
+box.innerHTML=
+
+`
+
+<b>${d.type}</b>
+
+<br><br>
+
+
+Längd
+
+<input id="length"
+value="${d.length}">
+
+
+<br><br>
+
+
+Djup
+
+<input id="depth"
+value="${d.depth}">
+
+
+
+<br><br>
+
+
+Kantprofil
+
+<select id="profile">
+
+<option>Rak</option>
+<option>Fasad</option>
+<option>Rund R10</option>
+
+</select>
+
+
+<br><br>
+
+
+Kanter:
+
+<br>
+
+<input type="checkbox" id="top">
+Överkant
+
+
+<br>
+
+<input type="checkbox" id="bottom">
+Framkant
+
+
+<br>
+
+<input type="checkbox" id="left">
+Vänster
+
+
+<br>
+
+<input type="checkbox" id="right">
+Höger
+
+
+<br><br>
+
+
+Hörn:
+
+<br>
+
+<input type="checkbox" id="tl">
+Övre vänster
+
+
+<br>
+
+<input type="checkbox" id="tr">
+Övre höger
+
+
+<br>
+
+<input type="checkbox" id="bl">
+Nedre vänster
+
+
+<br>
+
+<input type="checkbox" id="br">
+Nedre höger
+
+
+<br><br>
+
+
+<button id="rotate">
+Rotera 90°
+</button>
+
+
+`;
+
+
+
+
+
+document.getElementById("length")
+.onchange=e=>{
+
+d.length=parseInt(e.target.value);
+
+refresh(group);
+
+};
+
+
+
+document.getElementById("depth")
+.onchange=e=>{
+
+d.depth=parseInt(e.target.value);
+
+refresh(group);
+
+};
+
+
+
+
+
+document.getElementById("profile")
+.onchange=e=>{
+
+
+d.edgeProfile=e.target.value;
+
+
+if(e.target.value==="Rund R10"){
+
+d.corners={
+tl:true,
+tr:true,
+bl:true,
+br:true
+};
+
+}
+
+
+refresh(group);
+
+
+};
+
+
+
+
+
+
+["top","bottom","left","right"]
+.forEach(side=>{
+
+
+document.getElementById(side)
+.onchange=e=>{
+
+
+d.edgeSides[side]=e.target.checked;
+
+
+layer.draw();
+
+
+};
+
+
+});
+
+
+
+
+
+["tl","tr","bl","br"]
+.forEach(c=>{
+
+
+document.getElementById(c)
+.onchange=e=>{
+
+
+d.corners[c]=e.target.checked;
+
+
+refresh(group);
+
+
+};
+
+
+});
+
+
+
+
+
+
+document.getElementById("rotate")
+.onclick=()=>{
+
+
+d.rotation+=90;
+
+
+group.rotation(d.rotation);
+
+
+updateMeasures(group);
+
+
+layer.draw();
+
+
+};
+
+
+
+}
+
+
+
+
+
+
+
+function refresh(group){
+
+
+let rect =
+group.getChildren()[0];
+
+
+rect.width(
+rect.data.length/3
+);
+
+
+rect.height(
+rect.data.depth/3
+);
+
+
+
+applyCorners(rect);
+
+
+updateMeasures(group);
+
+
+layer.draw();
+
+
+updateList();
+
+
+}
+
+
+
+
+
+
+window.onresize=()=>{
+
+stage.width(container.clientWidth);
+
+stage.height(container.clientHeight);
+
+};
 
 
 
