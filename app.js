@@ -222,41 +222,43 @@ function deselectAll(){
 
     group.on("dragstart",()=>{
 
-  group.startX = group.x();
-  group.startY = group.y();
+  multiSelected.forEach(p=>{
+
+    p.startX = p.group.x();
+    p.startY = p.group.y();
+
+  });
 
 });
 
     
     group.on("dragmove", () => {
-if(multiSelected.length > 1){
 
- const dx =
- group.x()-group.startX;
+  if(multiSelected.length > 1 && multiSelected[0] === item){
 
- const dy =
- group.y()-group.startY;
+  const dx = group.x() - group.startX;
+  const dy = group.y() - group.startY;
 
 
- multiSelected.forEach(p=>{
+  multiSelected.forEach(p => {
 
-   if(p.group===group)return;
-
-
-   p.group.x(
-    p.group.x()+dx
-   );
+    if(p === item) return;
 
 
-   p.group.y(
-    p.group.y()+dy
-   );
+    p.group.x(
+      p.startX + dx
+    );
 
 
- });
+    p.group.y(
+      p.startY + dy
+    );
 
+
+  });
 
 }
+
 
   let dx = group.x() - group.startX;
   let dy = group.y() - group.startY;
