@@ -1408,7 +1408,25 @@ Rund
 
 </div>
 
+<div class="corner-buttons">
 
+<button data-corner="tl">
+↖
+</button>
+
+<button data-corner="tr">
+↗
+</button>
+
+<button data-corner="bl">
+↙
+</button>
+
+<button data-corner="br">
+↘
+</button>
+
+</div>
 
 <label>
 <input 
@@ -1562,7 +1580,29 @@ drawEdges(item);
 
 });
 
+document
+.querySelectorAll("[data-corner]")
+.forEach(btn=>{
 
+btn.onclick=()=>{
+
+let corner =
+btn.dataset.corner;
+
+
+d.corners[corner] =
+!d.corners[corner];
+
+
+applyCorners(item);
+
+
+layer.draw();
+
+
+};
+
+});
 
 
 document.getElementById("doneCheck").onchange=e=>{
