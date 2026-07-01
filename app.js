@@ -170,9 +170,6 @@ mmToPx(data.depth);
     }
 
     group.on("click tap", (e) => {
-      e.cancelBubble = true;
-      selectItem(item);
-      group.on("click tap", (e) => {
   e.cancelBubble = true;
   selectItem(item);
 });
@@ -208,48 +205,53 @@ function deselectAll(){
       layer.batchDraw();
     });
 
-    group.on("dragstart",()=>{
+   
+
+  group.on("dragstart",()=>{
 
   multiSelected.forEach(p=>{
-
     p.startX = p.group.x();
     p.startY = p.group.y();
-
   });
 
-});
+});  
+ group.on("dragmove", () => {
 
-    
-  group.on("dragmove", () => {
+  const dx = group.x() - group.startX;
+  const dy = group.y() - group.startY;
 
 
   if(multiSelected.length > 1 && multiSelected.includes(item)){
-
-
-    const dx =
-    group.x() - group.startX;
-
-
-    const dy =
-    group.y() - group.startY;
-
 
     multiSelected.forEach(p=>{
 
       if(p === item) return;
 
-
       p.group.x(
         p.startX + dx
       );
-
 
       p.group.y(
         p.startY + dy
       );
 
-
     });
+
+  }
+
+
+  group.x(
+    Math.round(group.x()/GRID)*GRID
+  );
+
+  group.y(
+    Math.round(group.y()/GRID)*GRID
+  );
+
+
+  layer.batchDraw();
+
+});
 
   }
 
