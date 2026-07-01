@@ -673,7 +673,6 @@ depthText.y(
 
 function resizePart(item){
 
-
 const {
  rect,
  group,
@@ -682,17 +681,15 @@ const {
 }=item;
 
 
-
-const w=mmToPx(data.length);
+const w = mmToPx(data.length);
 
 
 const h =
 type==="splash"
 ?
-100
+50
 :
 mmToPx(data.depth);
-
 
 
 
@@ -717,7 +714,6 @@ if(type!=="wall"){
  drawEdges(item);
 
 }
-
 else if(item.handles){
 
  positionWallHandles(item);
@@ -725,9 +721,7 @@ else if(item.handles){
 }
 
 
-
 layer.draw();
-
 
 }
 
