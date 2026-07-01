@@ -206,6 +206,10 @@ let measures =
 new Konva.Group();
 
 
+let edges =
+new Konva.Group();
+
+
 let topText =
 new Konva.Text({
 
@@ -242,13 +246,24 @@ group.add(rect);
 group.add(measures);
 
 
-
+group.add(edges);
 
 
 applyCorners(rect);
 
 
-updateMeasures(group);
+texts[1].x(
+rect.width()+15
+);
+
+texts[1].y(
+rect.height()/2
+);
+
+
+updateEdges(group);
+
+}
 
 
 
@@ -820,6 +835,117 @@ updateList();
 
 
 
+
+function updateEdges(group){
+
+
+let rect =
+group.getChildren()[0];
+
+
+let edgeGroup =
+group.getChildren()[2];
+
+
+edgeGroup.destroyChildren();
+
+
+
+let d =
+rect.data;
+
+
+
+let size=12;
+
+
+
+
+function triangle(x,y,rotation){
+
+
+return new Konva.RegularPolygon({
+
+x:x,
+
+y:y,
+
+sides:3,
+
+radius:size,
+
+rotation:rotation,
+
+fill:"#1e293b"
+
+});
+
+
+}
+
+
+
+
+if(d.edgeSides.top){
+
+edgeGroup.add(
+triangle(
+rect.width()/2,
+0,
+0
+));
+
+}
+
+
+
+if(d.edgeSides.bottom){
+
+
+edgeGroup.add(
+triangle(
+rect.width()/2,
+rect.height(),
+180
+));
+
+
+}
+
+
+
+
+if(d.edgeSides.left){
+
+
+edgeGroup.add(
+triangle(
+0,
+rect.height()/2,
+270
+));
+
+
+}
+
+
+
+if(d.edgeSides.right){
+
+
+edgeGroup.add(
+triangle(
+rect.width(),
+rect.height()/2,
+90
+));
+
+
+}
+
+
+
+}
 
 
 window.onresize=()=>{
