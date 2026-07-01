@@ -101,7 +101,7 @@ const w = mmToPx(data.length);
 const h =
 type === "splash"
 ?
-100
+50
 :
 mmToPx(data.depth);
 
