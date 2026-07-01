@@ -39,7 +39,7 @@ const background = new Konva.Rect({
  width:stage.width(),
  height:stage.height(),
  fill:"#eef3f8",
- listening:false
+ listening:true
 });
 
 
@@ -754,7 +754,8 @@ item.rect.cornerRadius(
 ]
 );
 
-
+item.rect.clearCache();
+item.rect.cache();
 
 }
 
@@ -853,57 +854,35 @@ layer.draw();
 
 function createWallHandles(item){
 
-
 const group=item.group;
 const rect=item.rect;
 
 
 const style={
-
-width:10,
-
-height:18,
-
-fill:"#2563eb",
-
-cornerRadius:3,
-
-draggable:true,
-
-visible:false,
-
-listening:false,
-
-offsetX:5,
-
-offsetY:9
-
+ width:10,
+ height:18,
+ fill:"#2563eb",
+ cornerRadius:3,
+ draggable:true,
+ visible:false,
+ listening:false,
+ offsetX:5,
+ offsetY:9
 };
 
 
-
 const left=new Konva.Rect({
-
-x:0,
-
-y:rect.height()/2,
-
-...style
-
+ x:0,
+ y:rect.height()/2,
+ ...style
 });
-
 
 
 const right=new Konva.Rect({
-
-x:rect.width(),
-
-y:rect.height()/2,
-
-...style
-
+ x:rect.width(),
+ y:rect.height()/2,
+ ...style
 });
-
 
 
 group.add(left);
@@ -911,45 +890,25 @@ group.add(right);
 
 
 
-
-
 right.on("dragmove",()=>{
-
 
 right.y(rect.height()/2);
 
-
-
-let min=mmToPx(WALL_MIN_LENGTH_MM);
-
-let max=mmToPx(WALL_MAX_LENGTH_MM);
-
-
-
 let nw=clamp(
  right.x(),
- min,
- max
+ mmToPx(WALL_MIN_LENGTH_MM),
+ mmToPx(WALL_MAX_LENGTH_MM)
 );
-
-
 
 right.x(nw);
 
-
 rect.width(nw);
-
 
 item.data.length=pxToMm(nw);
 
-
-
 layer.batchDraw();
 
-
 });
-
-
 
 
 
@@ -958,90 +917,41 @@ left.on("dragmove",()=>{
 left.y(rect.height()/2);
 
 
-let newX = clamp(
-    left.x(),
-    0,
-    rect.width() - mmToPx(WALL_MIN_LENGTH_MM)
+let newX=Math.max(
+0,
+left.x()
 );
-
-
-let oldRight =
-    rect.width();
 
 
 let newWidth =
-    oldRight - newX;
+rect.width()-newX;
 
 
-
-newWidth = clamp(
-    newWidth,
-    mmToPx(WALL_MIN_LENGTH_MM),
-    mmToPx(WALL_MAX_LENGTH_MM)
+newWidth=clamp(
+newWidth,
+mmToPx(WALL_MIN_LENGTH_MM),
+mmToPx(WALL_MAX_LENGTH_MM)
 );
 
 
-
 group.x(
-    group.x() + newX
+group.x()+newX
 );
 
 
 rect.width(newWidth);
 
 
-item.data.length =
-pxToMm(newWidth);
-
+item.data.length=pxToMm(newWidth);
 
 
 left.x(0);
-
 right.x(newWidth);
 
 
-
 layer.batchDraw();
 
 });
-
-
-left.y(rect.height()/2);
-
-
-
-let nw =
-rect.width()-left.x();
-
-
-
-nw=clamp(
- nw,
- mmToPx(WALL_MIN_LENGTH_MM),
- mmToPx(WALL_MAX_LENGTH_MM)
-);
-
-
-
-rect.width(nw);
-
-
-item.data.length=pxToMm(nw);
-
-
-
-left.x(0);
-
-right.x(nw);
-
-
-
-layer.batchDraw();
-
-
-});
-
-
 
 
 
@@ -1049,15 +959,12 @@ right.on("mouseenter",()=>setCursor("ew-resize"));
 left.on("mouseenter",()=>setCursor("ew-resize"));
 
 
-
 return {
  left,
  right
 };
 
-
 }
-
 
 
 
@@ -1760,7 +1667,7 @@ e.key==="Backspace"
 ){
 
 
-item=selected;
+const item=selected;
 
 
 item.group.destroy();
