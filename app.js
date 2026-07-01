@@ -832,6 +832,16 @@ updateList();
 
 function updateEdges(group){
 
+let edgeGroup =
+group.getChildren()[3];
+
+if(!edgeGroup){
+    return;
+}
+
+let rect =
+group.getChildren()[0];
+
 
 let rect =
 group.getChildren()[0];
