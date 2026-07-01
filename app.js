@@ -302,6 +302,8 @@ const rect=new Konva.Rect({
 
  strokeWidth:2
 
+ cornerRadius:0
+
 });
 
 
@@ -737,22 +739,24 @@ layer.draw();
 
 function applyCorners(item){
 
+if(item.type==="wall") return;
+
 
 const c=item.data.corners;
 
 
-item.rect.cornerRadius([
-
+item.rect.cornerRadius(
+[
  c.tl ? RADIUS:0,
-
  c.tr ? RADIUS:0,
-
  c.br ? RADIUS:0,
-
  c.bl ? RADIUS:0
+]
+);
 
-]);
 
+// behåll mått + lager korrekt
+item.rect.cache();
 
 }
 
