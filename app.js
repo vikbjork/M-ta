@@ -1158,30 +1158,29 @@ if(
 
 
 
+// =======================================
+// STAGE SELECTION BOX
+// =======================================
+
 stage.on("mousedown",(e)=>{
 
-
-if(
- e.target!==stage &&
- e.target!==background
-)return;
-
+ if(
+   e.target!==stage &&
+   e.target!==background
+ ) return;
 
 
-selectionStart =
-stage.getPointerPosition();
+ selectionStart = stage.getRelativePointerPosition();
 
 
-
-selectionRect.visible(true);
-
-
-selectionRect.position(selectionStart);
+ selectionRect.visible(true);
 
 
-selectionRect.width(0);
+ selectionRect.position(selectionStart);
 
-selectionRect.height(0);
+
+ selectionRect.width(0);
+ selectionRect.height(0);
 
 
 });
@@ -1193,33 +1192,42 @@ selectionRect.height(0);
 stage.on("mousemove",()=>{
 
 
-if(!selectionStart)return;
+ if(!selectionStart) return;
 
 
-const pos =
-stage.getPointerPosition();
+ const pos = stage.getRelativePointerPosition();
 
 
 
-selectionRect.setAttrs({
+ selectionRect.setAttrs({
 
-x:Math.min(pos.x,selectionStart.x),
+   x:Math.min(
+     pos.x,
+     selectionStart.x
+   ),
 
-y:Math.min(pos.y,selectionStart.y),
+   y:Math.min(
+     pos.y,
+     selectionStart.y
+   ),
 
-width:Math.abs(pos.x-selectionStart.x),
 
-height:Math.abs(pos.y-selectionStart.y)
+   width:Math.abs(
+     pos.x-selectionStart.x
+   ),
+
+
+   height:Math.abs(
+     pos.y-selectionStart.y
+   )
+
+ });
+
+
+ layer.batchDraw();
+
 
 });
-
-
-
-layer.batchDraw();
-
-
-});
-
 
 
 
@@ -1228,52 +1236,51 @@ layer.batchDraw();
 stage.on("mouseup",()=>{
 
 
-if(!selectionStart)return;
+ if(!selectionStart) return;
 
 
 
-const box =
-selectionRect.getClientRect();
+ const box =
+ selectionRect.getClientRect();
 
 
 
-multiSelected=[];
+ multiSelected=[];
 
 
 
-parts.forEach(p=>{
+ parts.forEach(p=>{
 
 
-if(
- Konva.Util.haveIntersection(
- box,
- p.group.getClientRect()
- )
-){
+  if(
+   Konva.Util.haveIntersection(
+    box,
+    p.group.getClientRect()
+   )
+  ){
 
 
-multiSelected.push(p);
+    multiSelected.push(p);
 
 
-p.rect.stroke("#2563eb");
-
-p.rect.strokeWidth(4);
-
-
-}
+    p.rect.stroke("#2563eb");
+    p.rect.strokeWidth(4);
 
 
-});
+  }
+
+
+ });
 
 
 
-selectionRect.visible(false);
+ selectionRect.visible(false);
 
 
-selectionStart=null;
+ selectionStart=null;
 
 
-layer.draw();
+ layer.draw();
 
 
 });
