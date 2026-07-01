@@ -436,17 +436,23 @@ group.on("mouseleave",()=>{
 
 // DRAG
 
+// =======================================
+// DRAG + MULTI MOVE
+// =======================================
+
 group.on("dragstart",()=>{
 
+  if(!multiSelected.includes(item)){
+    multiSelected = [item];
+  }
 
-multiSelected.forEach(p=>{
 
- p.startX=p.group.x();
+  multiSelected.forEach(p=>{
 
- p.startY=p.group.y();
+    p.dragStartX = p.group.x();
+    p.dragStartY = p.group.y();
 
-});
-
+  });
 
 });
 
@@ -457,48 +463,55 @@ multiSelected.forEach(p=>{
 group.on("dragmove",()=>{
 
 
-if(
- multiSelected.length>1 &&
- multiSelected.includes(item)
-){
+  if(
+    multiSelected.length > 1 &&
+    multiSelected.includes(item)
+  ){
 
 
-const dx=group.x()-group.startX;
-const dy=group.y()-group.startY;
+    const dx =
+      group.x() - item.dragStartX;
 
 
-
-multiSelected.forEach(p=>{
-
-
- if(p===item)return;
-
-
- p.group.x(p.startX+dx);
-
- p.group.y(p.startY+dy);
-
-
-});
-
-
-}
+    const dy =
+      group.y() - item.dragStartY;
 
 
 
-
-group.x(
- Math.round(group.x()/GRID)*GRID
-);
+    multiSelected.forEach(p=>{
 
 
-group.y(
- Math.round(group.y()/GRID)*GRID
-);
+      if(p===item) return;
+
+
+      p.group.x(
+        p.dragStartX + dx
+      );
+
+
+      p.group.y(
+        p.dragStartY + dy
+      );
+
+
+    });
+
+
+  }
 
 
 
-layer.batchDraw();
+  group.x(
+    Math.round(group.x()/GRID)*GRID
+  );
+
+
+  group.y(
+    Math.round(group.y()/GRID)*GRID
+  );
+
+
+  layer.batchDraw();
 
 
 });
