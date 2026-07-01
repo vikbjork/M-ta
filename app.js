@@ -79,6 +79,8 @@ const MAX_UNDO = 50;
 
 function saveState(){
 
+    if(isUndoing) return;
+
     const state = parts.map(p=>({
 
         data: structuredClone(p.data),
@@ -101,9 +103,15 @@ function saveState(){
 }
 
 
- function undo(){
+ let isUndoing=false;
+
+
+function undo(){
 
     if(undoStack.length===0) return;
+
+
+    isUndoing=true;
 
 
     const state = undoStack.pop();
@@ -140,7 +148,7 @@ function saveState(){
     updateList();
 
     layer.draw();
-
+    isUndoing=false;
 }
 
 // =======================================
@@ -526,6 +534,8 @@ group.on("mouseleave",()=>{
 
 group.on("dragstart",()=>{
 
+saveState();
+ 
   if(!multiSelected.includes(item)){
     multiSelected = [item];
   }
