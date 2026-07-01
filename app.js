@@ -44,6 +44,8 @@ function init() {
   let parts = [];      // { id, type, group, rect, lengthText, depthText, handles, data }
   let selected = null;
   let nextId = 1;
+  let allSelected = false;
+  let movingAll = false;
 
   // ===================================
   // HELPERS
@@ -159,6 +161,39 @@ mmToPx(data.depth);
     group.on("click tap", (e) => {
       e.cancelBubble = true;
       selectItem(item);
+      function selectAll(){
+
+  allSelected = true;
+
+  parts.forEach((p)=>{
+
+    p.rect.stroke("#2563eb");
+    p.rect.strokeWidth(4);
+
+  });
+
+  updateList();
+  layer.draw();
+
+}
+
+
+
+function deselectAll(){
+
+  allSelected = false;
+
+  parts.forEach((p)=>{
+
+    p.rect.stroke("#1e293b");
+    p.rect.strokeWidth(2);
+
+  });
+
+
+  layer.draw();
+
+}
     });
 
     group.on("mouseenter", () => {
