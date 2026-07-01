@@ -267,6 +267,17 @@ button:focus-visible {
   background: #b91c1c;
 }
 
+.hint {
+  font-size: 12px;
+  color: #64748b;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-top: 12px;
+  line-height: 1.4;
+}
+
 .done-label {
   margin-top: 14px !important;
   padding-top: 12px;
