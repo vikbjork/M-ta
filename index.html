@@ -1,274 +1,89 @@
 <!DOCTYPE html>
 <html lang="sv">
-
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Köksskiva Ritverktyg</title>
+  <link rel="stylesheet" href="style.css">
 
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-<title>Köksskiva Ritverktyg</title>
-
-
-<link rel="stylesheet" href="style.css">
-
-
-
-<!-- Konva -->
-<script 
-src="https://cdn.jsdelivr.net/npm/konva@9.3.18/konva.min.js">
-</script>
-
-
+  <!-- Konva -->
+  <script src="https://cdn.jsdelivr.net/npm/konva@9.3.18/konva.min.js"></script>
 </head>
-
-
 <body>
 
-
-<div class="app">
-
-
-
-<header class="toolbar">
-
-
-<div class="brand">
-
-<h1>Köksskiva Ritverktyg</h1>
-
-</div>
-
-
-
-
-
-<div class="tools">
-
-
-<button id="addCountertop">
-+ Bänkskiva
-</button>
-
-
-<button id="addSplash">
-+ Stänkskydd
-</button>
-
-
-<button id="addWall">
-+ Vägg
-</button>
-
-
-
-<button id="saveProject">
-💾 Spara
-</button>
-
-
-
-<button id="loadProject">
-📂 Öppna
-</button>
-
-
-
-<input
-type="file"
-id="fileInput"
-accept=".json"
-hidden
->
-
-
-
-<button id="exportImage">
-🖼 Exportera bild
-</button>
-
-
-
-</div>
-
-
-</header>
-
-
-
-
-
-
-
-
-<main class="workspace">
-
-
-
-
-
-<section class="canvas-area">
-
-
-<div id="canvas-container"></div>
-
-
-</section>
-
-
-
-
-
-
-
-<aside class="side-panel">
-
-
-
-
-
-<section>
-
-
-<h2>Objekt</h2>
-
-
-<div 
-id="objectList"
-class="object-list">
-
-
-<p class="empty">
-Inga objekt ännu
-</p>
-
-
-</div>
-
-
-</section>
-
-
-
-
-
-
-
-
-<section class="properties">
-
-
-<h2>Egenskaper</h2>
-
-
-
-<div 
-id="propertiesContent">
-
-
-<p>
-Markera ett objekt
-</p>
-
-
-</div>
-
-
-</section>
-
-
-
-
-
-
-
-
-<section class="checklist">
-
-
-<h2>Offertkontroll</h2>
-
-
-
-<label>
-
-<input type="checkbox">
-
-Alla mått kontrollerade
-
-</label>
-
-
-
-
-
-<label>
-
-<input type="checkbox">
-
-Alla kantprofiler valda
-
-</label>
-
-
-
-
-
-<label>
-
-<input type="checkbox">
-
-Alla hörn kontrollerade
-
-</label>
-
-
-
-
-
-<label>
-
-<input type="checkbox">
-
-Redo för offert
-
-</label>
-
-
-
-
-</section>
-
-
-
-
-
-
-</aside>
-
-
-
-
-</main>
-
-
-
-
-</div>
-
-
-
-
-
-
-
-<script src="app.js"></script>
-
-
-
-
+  <div class="app">
+
+    <header class="toolbar">
+      <div class="brand">
+        <h1>Köksskiva Ritverktyg</h1>
+      </div>
+
+      <div class="tools">
+        <button id="addCountertop" title="Lägg till en ny bänkskiva">+ Bänkskiva</button>
+        <button id="addSplash" title="Lägg till ett nytt stänkskydd">+ Stänkskydd</button>
+        <button id="addWall" title="Lägg till en vägglinje">+ Vägg</button>
+
+        <button id="saveProject" title="Spara ritningen som en fil">💾 Spara</button>
+        <button id="loadProject" title="Öppna en tidigare sparad ritning">📂 Öppna</button>
+        <input type="file" id="fileInput" accept=".json" hidden>
+
+        <button id="exportImage" title="Exportera ritningen som en bild">🖼 Exportera bild</button>
+        <button id="clearAll" title="Ta bort alla objekt från ritningen">🧹 Rensa allt</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+
+      <section class="canvas-area">
+        <div id="canvas-container"></div>
+      </section>
+
+      <aside class="side-panel">
+
+        <section>
+          <h2>Objekt</h2>
+          <div id="objectList" class="object-list">
+            <p class="empty">Inga objekt ännu</p>
+          </div>
+        </section>
+
+        <section class="properties">
+          <h2>Egenskaper</h2>
+          <div id="propertiesContent">
+            <p>Markera ett objekt</p>
+          </div>
+        </section>
+
+        <section class="checklist">
+          <h2>Offertkontroll</h2>
+
+          <label>
+            <input type="checkbox">
+            Alla mått kontrollerade
+          </label>
+
+          <label>
+            <input type="checkbox">
+            Alla kantprofiler valda
+          </label>
+
+          <label>
+            <input type="checkbox">
+            Alla hörn kontrollerade
+          </label>
+
+          <label>
+            <input type="checkbox">
+            Redo för offert
+          </label>
+        </section>
+
+      </aside>
+
+    </main>
+
+  </div>
+
+  <script src="app.js"></script>
 </body>
-
-
 </html>
