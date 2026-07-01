@@ -72,8 +72,76 @@ let multiSelected=[];
 let parts=[];
 let selected=null;
 let nextId=1;
+ 
+let undoStack = [];
+const MAX_UNDO = 50;
 
 
+function saveState(){
+
+    const state = parts.map(p=>({
+
+        data: structuredClone(p.data),
+
+        x:p.group.x(),
+        y:p.group.y(),
+
+        rotation:p.group.rotation()
+
+    }));
+
+
+    undoStack.push(state);
+
+
+    if(undoStack.length > MAX_UNDO){
+        undoStack.shift();
+    }
+
+}
+
+
+ function undo(){
+
+    if(undoStack.length===0) return;
+
+
+    const state = undoStack.pop();
+
+
+    parts.forEach(p=>{
+        p.group.destroy();
+    });
+
+
+    parts=[];
+
+
+    state.forEach(o=>{
+
+        const item =
+        addPart(
+            o.data.type,
+            o.data
+        );
+
+
+        item.group.x(o.x);
+        item.group.y(o.y);
+        item.group.rotation(o.rotation);
+
+    });
+
+
+    selected=null;
+
+    renderProperties(null);
+
+    updateList();
+
+    layer.draw();
+
+}
 
 // =======================================
 // HELPERS
@@ -235,8 +303,9 @@ function fitCanvas(){
 // =======================================
 
 
-function addPart(type,savedData){
+function addPart(type,savedData){ 
 
+saveState();
 
 const data=savedData || defaultData(type);
 
@@ -1421,6 +1490,7 @@ Klar
 
 document.getElementById("editLength").onchange=e=>{
 
+saveState();
 
 d.length =
 clamp(
@@ -1439,7 +1509,8 @@ resizePart(item);
 
 document.getElementById("editDepth").onchange=e=>{
 
-
+saveState();
+ 
 d.depth =
 clamp(
 parseInt(e.target.value),
@@ -1480,6 +1551,8 @@ layer.draw();
 
 
 document.getElementById("deleteBtn").onclick=()=>{
+
+saveState();
 
 
 item.group.destroy();
@@ -1600,7 +1673,8 @@ document.getElementById("addSplash")
 document.getElementById("addWall")
 .onclick=()=>addPart("wall");
 
-
+document.getElementById("undoBtn")
+.onclick=undo;
 
 
 
@@ -1666,6 +1740,8 @@ e.key==="Delete" ||
 e.key==="Backspace"
 ){
 
+saveState();
+
 
 const item=selected;
 
@@ -1688,6 +1764,21 @@ renderProperties(null);
 layer.draw();
 
 
+window.addEventListener("keydown",e=>{
+
+if(
+(e.ctrlKey || e.metaKey) &&
+e.key==="z"
+){
+
+e.preventDefault();
+
+undo();
+
+}
+
+});
+ 
 }
 
 
