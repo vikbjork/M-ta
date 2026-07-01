@@ -1,0 +1,150 @@
+```html
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Köksskiva Ritverktyg</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Konva canvas library -->
+    <script src="https://cdn.jsdelivr.net/npm/konva@9.3.18/konva.min.js"></script>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- TOP BAR -->
+    <header class="toolbar">
+
+        <div class="brand">
+            <h1>Köksskiva Ritverktyg</h1>
+        </div>
+
+
+        <div class="tools">
+
+            <button id="addCountertop">
+                + Bänkskiva
+            </button>
+
+
+            <button id="addSplash">
+                + Stänkskydd
+            </button>
+
+
+            <button id="addWall">
+                + Vägg
+            </button>
+
+
+            <button id="exportImage">
+                Exportera bild
+            </button>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- MAIN AREA -->
+    <main class="workspace">
+
+
+        <!-- CANVAS AREA -->
+
+        <section class="canvas-area">
+
+            <div id="canvas-container"></div>
+
+        </section>
+
+
+
+        <!-- SIDE PANEL -->
+
+        <aside class="side-panel">
+
+
+            <h2>Objekt</h2>
+
+
+            <div id="objectList" class="object-list">
+
+                <p class="empty">
+                    Inga objekt ännu
+                </p>
+
+            </div>
+
+
+
+            <div class="properties">
+
+
+                <h2>Egenskaper</h2>
+
+
+                <div id="propertiesContent">
+
+                    <p>
+                        Markera ett objekt
+                    </p>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="checklist">
+
+
+                <h2>Offertkontroll</h2>
+
+
+                <label>
+                    <input type="checkbox">
+                    Alla mått kontrollerade
+                </label>
+
+
+                <label>
+                    <input type="checkbox">
+                    Alla kantprofiler valda
+                </label>
+
+
+                <label>
+                    <input type="checkbox">
+                    Alla hörn kontrollerade
+                </label>
+
+
+            </div>
+
+
+        </aside>
+
+
+    </main>
+
+
+</div>
+
+
+
+<script src="app.js"></script>
+
+
+</body>
+</html>
+```
