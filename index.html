@@ -1,149 +1,274 @@
 <!DOCTYPE html>
 <html lang="sv">
+
 <head>
-    <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
 
-    <title>Köksskiva Ritverktyg</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="style.css">
 
-    <!-- Konva canvas library -->
-    <script src="https://cdn.jsdelivr.net/npm/konva@9.3.18/konva.min.js"></script>
+<title>Köksskiva Ritverktyg</title>
+
+
+<link rel="stylesheet" href="style.css">
+
+
+
+<!-- Konva -->
+<script 
+src="https://cdn.jsdelivr.net/npm/konva@9.3.18/konva.min.js">
+</script>
+
+
 </head>
+
 
 <body>
 
+
 <div class="app">
 
-    <!-- TOP BAR -->
-    <header class="toolbar">
-
-        <div class="brand">
-            <h1>Köksskiva Ritverktyg</h1>
-        </div>
 
 
-        <div class="tools">
-
-            <button id="addCountertop">
-                + Bänkskiva
-            </button>
+<header class="toolbar">
 
 
-            <button id="addSplash">
-                + Stänkskydd
-            </button>
+<div class="brand">
 
+<h1>Köksskiva Ritverktyg</h1>
 
-            <button id="addWall">
-                + Vägg
-            </button>
-
-
-            <button id="exportImage">
-                Exportera bild
-            </button>
-
-        </div>
-
-    </header>
+</div>
 
 
 
-    <!-- MAIN AREA -->
-    <main class="workspace">
 
 
-        <!-- CANVAS AREA -->
-
-        <section class="canvas-area">
-
-            <div id="canvas-container"></div>
-
-        </section>
+<div class="tools">
 
 
-
-        <!-- SIDE PANEL -->
-
-        <aside class="side-panel">
-
-
-            <h2>Objekt</h2>
+<button id="addCountertop">
++ Bänkskiva
+</button>
 
 
-            <div id="objectList" class="object-list">
+<button id="addSplash">
++ Stänkskydd
+</button>
 
-                <p class="empty">
-                    Inga objekt ännu
-                </p>
 
-            </div>
+<button id="addWall">
++ Vägg
+</button>
 
 
 
-            <div class="properties">
-
-
-                <h2>Egenskaper</h2>
-
-
-                <div id="propertiesContent">
-
-                    <p>
-                        Markera ett objekt
-                    </p>
-
-
-                </div>
-
-
-            </div>
+<button id="saveProject">
+💾 Spara
+</button>
 
 
 
-            <div class="checklist">
+<button id="loadProject">
+📂 Öppna
+</button>
 
 
-                <h2>Offertkontroll</h2>
+
+<input
+type="file"
+id="fileInput"
+accept=".json"
+hidden
+>
 
 
-                <label>
-                    <input type="checkbox">
-                    Alla mått kontrollerade
-                </label>
+
+<button id="exportImage">
+🖼 Exportera bild
+</button>
 
 
-                <label>
-                    <input type="checkbox">
-                    Alla kantprofiler valda
-                </label>
+
+</div>
 
 
-                <label>
-                    <input type="checkbox">
-                    Alla hörn kontrollerade
-                </label>
+</header>
 
 
-            </div>
 
 
-        </aside>
 
 
-    </main>
+
+
+<main class="workspace">
+
+
+
+
+
+<section class="canvas-area">
+
+
+<div id="canvas-container"></div>
+
+
+</section>
+
+
+
+
+
+
+
+<aside class="side-panel">
+
+
+
+
+
+<section>
+
+
+<h2>Objekt</h2>
+
+
+<div 
+id="objectList"
+class="object-list">
+
+
+<p class="empty">
+Inga objekt ännu
+</p>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+<section class="properties">
+
+
+<h2>Egenskaper</h2>
+
+
+
+<div 
+id="propertiesContent">
+
+
+<p>
+Markera ett objekt
+</p>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+<section class="checklist">
+
+
+<h2>Offertkontroll</h2>
+
+
+
+<label>
+
+<input type="checkbox">
+
+Alla mått kontrollerade
+
+</label>
+
+
+
+
+
+<label>
+
+<input type="checkbox">
+
+Alla kantprofiler valda
+
+</label>
+
+
+
+
+
+<label>
+
+<input type="checkbox">
+
+Alla hörn kontrollerade
+
+</label>
+
+
+
+
+
+<label>
+
+<input type="checkbox">
+
+Redo för offert
+
+</label>
+
+
+
+
+</section>
+
+
+
+
+
+
+</aside>
+
+
+
+
+</main>
+
+
 
 
 </div>
 
 
 
+
+
+
+
 <script src="app.js"></script>
 
 
+
+
 </body>
+
+
 </html>
-```
