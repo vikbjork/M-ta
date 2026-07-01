@@ -953,6 +953,56 @@ layer.batchDraw();
 
 left.on("dragmove",()=>{
 
+left.y(rect.height()/2);
+
+
+let newX = clamp(
+    left.x(),
+    0,
+    rect.width() - mmToPx(WALL_MIN_LENGTH_MM)
+);
+
+
+let oldRight =
+    rect.width();
+
+
+let newWidth =
+    oldRight - newX;
+
+
+
+newWidth = clamp(
+    newWidth,
+    mmToPx(WALL_MIN_LENGTH_MM),
+    mmToPx(WALL_MAX_LENGTH_MM)
+);
+
+
+
+group.x(
+    group.x() + newX
+);
+
+
+rect.width(newWidth);
+
+
+item.data.length =
+pxToMm(newWidth);
+
+
+
+left.x(0);
+
+right.x(newWidth);
+
+
+
+layer.batchDraw();
+
+});
+
 
 left.y(rect.height()/2);
 
