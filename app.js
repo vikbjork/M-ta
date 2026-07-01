@@ -300,7 +300,7 @@ const rect=new Konva.Rect({
 
  stroke:"#1e293b",
 
- strokeWidth:2
+ strokeWidth:2,
 
  cornerRadius:0
 
@@ -755,8 +755,6 @@ item.rect.cornerRadius(
 );
 
 
-// behåll mått + lager korrekt
-item.rect.cache();
 
 }
 
