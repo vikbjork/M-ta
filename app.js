@@ -208,11 +208,63 @@ function deselectAll(){
       layer.batchDraw();
     });
 
+    group.on("dragstart",()=>{
+
+  group.startX = group.x();
+  group.startY = group.y();
+
+});
+
+    
     group.on("dragmove", () => {
-      group.x(Math.round(group.x() / GRID) * GRID);
-      group.y(Math.round(group.y() / GRID) * GRID);
-      layer.batchDraw();
+
+
+  let dx = group.x() - group.startX;
+  let dy = group.y() - group.startY;
+
+
+  if(allSelected && !movingAll){
+
+    movingAll = true;
+
+
+    parts.forEach((p)=>{
+
+      if(p.group === group) return;
+
+
+      p.group.x(
+        p.group.x()+dx
+      );
+
+
+      p.group.y(
+        p.group.y()+dy
+      );
+
+
     });
+
+
+    movingAll=false;
+
+  }
+
+
+
+  group.x(
+    Math.round(group.x()/GRID)*GRID
+  );
+
+
+  group.y(
+    Math.round(group.y()/GRID)*GRID
+  );
+
+
+  layer.batchDraw();
+
+});
 
     layer.add(group);
 
@@ -698,6 +750,15 @@ mmToPx(data.depth);
   // ===================================
 
   window.addEventListener("keydown", (e) => {
+    if(e.ctrlKey && e.key.toLowerCase()==="a"){
+
+  e.preventDefault();
+
+  selectAll();
+
+  return;
+
+}
     const tag = document.activeElement && document.activeElement.tagName;
     const typing = tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA";
     if (typing || !selected) return;
