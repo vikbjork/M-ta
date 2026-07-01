@@ -26,80 +26,6 @@ function init() {
     height: canvasEl.clientHeight
   });
 
-
-  let viewScale = 1;
-
-
-function applyZoom(){
-
-    stage.scale({
-        x:viewScale,
-        y:viewScale
-    });
-
-    stage.draw();
-
-}
-
-
-
-function fitView(){
-
-    if(parts.length === 0){
-        viewScale = 1;
-        applyZoom();
-        return;
-    }
-
-
-    let box =
-    layer.getClientRect();
-
-
-    let padding = 80;
-
-
-    let scaleX =
-    (stage.width()-padding) / box.width;
-
-
-    let scaleY =
-    (stage.height()-padding) / box.height;
-
-
-
-    viewScale =
-    Math.min(scaleX,scaleY,1);
-
-
-
-    stage.scale({
-        x:viewScale,
-        y:viewScale
-    });
-
-
-    stage.position({
-
-        x:
-        (stage.width()-box.width*viewScale)/2
-        -
-        box.x*viewScale,
-
-
-        y:
-        (stage.height()-box.height*viewScale)/2
-        -
-        box.y*viewScale
-
-    });
-
-
-    stage.draw();
-
-}
-
-  
   const gridLayer = new Konva.Layer();
   const background = new Konva.Rect({
     x: 0,
@@ -249,7 +175,6 @@ function fitView(){
     layer.add(group);
     layer.draw();
     updateList();
-    fitView();
 
     return item;
   }
