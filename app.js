@@ -1,105 +1,175 @@
+// =======================================
+// KÖKSSKIVA RITVERKTYG
+// APP.JS v4 - DEL 1
+// =======================================
+
+
 window.addEventListener("DOMContentLoaded", () => {
 
-const container = document.getElementById("canvas-container");
 
-const stage = new Konva.Stage({
+const canvas =
+document.getElementById("canvas-container");
+
+
+const stage =
+new Konva.Stage({
+
     container: "canvas-container",
-    width: container.clientWidth,
-    height: container.clientHeight
+
+    width: canvas.clientWidth,
+
+    height: canvas.clientHeight
+
 });
 
-const layer = new Konva.Layer();
+
+
+const background =
+new Konva.Rect({
+
+    x:0,
+    y:0,
+
+    width:stage.width(),
+
+    height:stage.height(),
+
+    fill:"#eef3f8",
+
+    listening:false
+
+});
+
+
+
+const grid =
+new Konva.Layer();
+
+
+
+stage.add(grid);
+
+
+grid.add(background);
+
+
+
+const layer =
+new Konva.Layer();
+
+
 stage.add(layer);
 
 
-let items = [];
-let selected = null;
-let counter = 1;
 
 
-// ---------------------------
+let parts=[];
+
+let selected=null;
+
+let nextId=1;
+
+
+
+
+
+// =======================================
 // BUTTONS
-// ---------------------------
-
-document.getElementById("addCountertop")
-.onclick = () => createItem("Bänkskiva");
+// =======================================
 
 
-document.getElementById("addSplash")
-.onclick = () => createItem("Stänkskydd");
-
-
-document.getElementById("addWall")
-.onclick = () => createItem("Vägg");
+document
+.getElementById("addCountertop")
+.onclick=()=>addPart("countertop");
 
 
 
-document.getElementById("exportImage")
-.onclick = () => {
+document
+.getElementById("addSplash")
+.onclick=()=>addPart("splash");
 
-    const a = document.createElement("a");
 
-    a.download="skiss.png";
 
-    a.href =
-    stage.toDataURL({
-        pixelRatio:2
-    });
-
-    a.click();
-
-};
+document
+.getElementById("addWall")
+.onclick=()=>addPart("wall");
 
 
 
 
-// ---------------------------
-// CREATE
-// ---------------------------
+
+// =======================================
+// CREATE PART
+// =======================================
 
 
-function createItem(type){
+function addPart(type){
 
 
 let data = {
 
-id: counter++,
 
-type:type,
+id:nextId++,
 
-length: type==="Vägg" ? 1200 : 2400,
+type,
 
-depth: type==="Vägg" ? 10 : 620,
 
-edge:"Rak",
+length:
+type==="wall"
+?
+1200
+:
+2400,
 
-corners:{
-tl:false,
-tr:false,
-bl:false,
-br:false
-},
+
+depth:
+type==="wall"
+?
+10
+:
+620,
+
+
+rotation:0,
+
+
+edgeProfile:"Rak",
+
 
 edges:{
+
 top:false,
 bottom:false,
 left:false,
 right:false
+
 },
 
-done:false,
 
-rotation:0
+corners:{
+
+tl:false,
+tr:false,
+bl:false,
+br:false
+
+},
+
+
+done:false
 
 };
 
 
 
-let group = new Konva.Group({
+
+
+let group =
+new Konva.Group({
 
 x:200,
 
-y:150,
+y:200,
 
 draggable:true
 
@@ -107,26 +177,37 @@ draggable:true
 
 
 
-let rect = new Konva.Rect({
+
+
+let rect =
+new Konva.Rect({
 
 width:data.length/3,
 
 height:data.depth/3,
 
+
 fill:
-type==="Vägg"
+type==="wall"
 ?
-"#94a3b8"
+"#64748b"
 :
 "#ffffff",
+
 
 stroke:"#1e293b",
 
 strokeWidth:2,
 
-cornerRadius:0
+
+cornerRadius:0,
+
+
+draggable:true
+
 
 });
+
 
 
 rect.data=data;
@@ -134,49 +215,84 @@ rect.data=data;
 
 
 
-let measure = new Konva.Text({
+
+
+let measure =
+new Konva.Text({
 
 fontSize:14,
 
 fill:"#1e293b",
 
-x:0,
-
-y:-25,
-
-text:""
+align:"center"
 
 });
+
 
 
 
 
 group.add(rect);
+
 group.add(measure);
 
 
 
-group.on("click",()=>select(group));
+
+if(type!=="wall"){
+
+updateMeasure(group);
+
+}
+
+
+
+
+
+group.on("click",()=>{
+
+select(group);
+
+});
+
+
+
 
 
 group.on("dragmove",()=>{
 
-    updateMeasure(group);
+
+group.x(
+Math.round(group.x()/10)*10
+);
+
+
+group.y(
+Math.round(group.y()/10)*10
+);
+
+
+updateMeasure(group);
+
 
 });
+
+
+
 
 
 
 layer.add(group);
 
-items.push(group);
+
+parts.push(group);
 
 
-updateShape(group);
+layer.draw();
+
 
 updateList();
 
-layer.draw();
 
 }
 
@@ -184,28 +300,41 @@ layer.draw();
 
 
 
-// ---------------------------
+
+
+
+
+// =======================================
 // SELECT
-// ---------------------------
+// =======================================
 
 
 function select(group){
 
+
 selected=group;
 
-items.forEach(i=>{
 
-i.getChildren()[0]
+
+parts.forEach(p=>{
+
+
+p.getChildren()[0]
 .strokeWidth(
-i===group ? 4 : 2
+p===group ? 4 : 2
 );
+
+
 
 });
 
 
+
 showProperties(group);
 
+
 layer.draw();
+
 
 }
 
@@ -213,12 +342,67 @@ layer.draw();
 
 
 
-// ---------------------------
-// SHAPE
-// ---------------------------
 
 
-function updateShape(group){
+
+
+// =======================================
+// MEASUREMENTS
+// =======================================
+
+
+function updateMeasure(group){
+
+
+
+let rect =
+group.getChildren()[0];
+
+
+let text =
+group.getChildren()[1];
+
+
+
+let d=rect.data;
+
+
+
+
+text.text(
+`${d.length} mm\n${d.depth} mm`
+);
+
+
+
+text.x(
+rect.width()/2-45
+);
+
+
+
+text.y(
+-40
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =======================================
+// RESIZE OBJECT
+// =======================================
+
+
+function resizePart(group){
 
 
 let rect =
@@ -229,10 +413,49 @@ let d=rect.data;
 
 
 
-rect.width(d.length/3);
+rect.width(
+d.length/3
+);
 
-rect.height(d.depth/3);
 
+rect.height(
+d.depth/3
+);
+
+
+
+applyCorners(rect);
+
+
+
+updateMeasure(group);
+
+
+
+layer.draw();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =======================================
+// CORNERS
+// =======================================
+
+
+function applyCorners(rect){
+
+
+
+let d=rect.data;
 
 
 let radius=0;
@@ -255,50 +478,18 @@ radius=25;
 rect.cornerRadius(radius);
 
 
-
-updateMeasure(group);
-
 }
 
 
 
 
 
-// ---------------------------
-// MEASURE
-// ---------------------------
-
-
-function updateMeasure(group){
-
-
-let rect =
-group.getChildren()[0];
-
-
-let text =
-group.getChildren()[1];
-
-
-text.text(
-`${rect.data.length} x ${rect.data.depth} mm`
-);
-
-
-text.x(
-rect.width()/2-50
-);
-
-
-}
 
 
 
-
-
-// ---------------------------
+// =======================================
 // LIST
-// ---------------------------
+// =======================================
 
 
 function updateList(){
@@ -312,43 +503,53 @@ list.innerHTML="";
 
 
 
-items.forEach(item=>{
+parts
+.filter(p=>
+p.getChildren()[0].data.type!=="wall"
+)
+.forEach(p=>{
 
 
-let d=item.getChildren()[0].data;
+let d=p.getChildren()[0].data;
 
 
 
-let div=document.createElement("div");
+let item =
+document.createElement("div");
 
 
-div.style.padding="8px";
 
-div.style.marginBottom="5px";
-
-div.style.background="#fff";
-
-div.style.borderRadius="8px";
+item.className="object-item";
 
 
-div.innerHTML =
+
+item.innerHTML=
+
 `
-<b>${d.type}</b>
+<b>${d.type==="countertop"
+?"Bänkskiva"
+:"Stänkskydd"}</b>
+
 <br>
-${d.length} x ${d.depth}
-${d.done ? " ✓":""}
+
+${d.length} x ${d.depth} mm
+
+${d.done?" ✓":""}
+
 `;
 
 
 
-div.onclick=()=>select(item);
+item.onclick=()=>select(p);
 
 
-list.appendChild(div);
+
+list.appendChild(item);
 
 
 
 });
+
 
 }
 
@@ -356,88 +557,189 @@ list.appendChild(div);
 
 
 
-// ---------------------------
-// PANEL
-// ---------------------------
+
+
+
+// =======================================
+// RESIZE WINDOW
+// =======================================
+
+
+window.addEventListener(
+"resize",
+()=>{
+
+
+stage.width(
+canvas.clientWidth
+);
+
+
+stage.height(
+canvas.clientHeight
+);
+
+
+
+background.width(
+stage.width()
+);
+
+
+background.height(
+stage.height()
+);
+
+
+
+layer.draw();
+
+
+});
+
+
+
+});
+
+// =======================================
+// APP.JS v4 - DEL 2
+// =======================================
+
 
 
 function showProperties(group){
-
-
-let rect =
-group.getChildren()[0];
-
-
-let d=rect.data;
 
 
 let box =
 document.getElementById("propertiesContent");
 
 
+let rect =
+group.getChildren()[0];
+
+
+let d =
+rect.data;
+
+
 
 box.innerHTML = `
 
 
-<b>${d.type}</b>
+<h3>
+${
+d.type==="countertop"
+?"Bänkskiva"
+:
+d.type==="splash"
+?"Stänkskydd"
+:
+"Vägg"
+}
+</h3>
+
+
+Längd (mm)
+
+<input id="editLength"
+value="${d.length}">
+
 
 <br><br>
 
 
-Längd
+Djup (mm)
 
-<input id="len" value="${d.length}">
+<input id="editDepth"
+value="${d.depth}">
 
-
-<br><br>
-
-
-Djup
-
-<input id="dep" value="${d.depth}">
 
 
 <br><br>
+
+
+${d.type!=="wall" ? `
 
 
 Kantprofil
 
-<select id="edge">
+
+<select id="edgeSelect">
+
 
 <option>Rak</option>
+
 <option>Fasad</option>
+
 <option>Rund</option>
+
 
 </select>
 
 
-<br><br>
+
+<div id="edgeButtons">
+
+
+<button data-edge="top">
+↑ Topp
+</button>
+
+
+<button data-edge="bottom">
+↓ Fram
+</button>
+
+
+<button data-edge="left">
+← Vänster
+</button>
+
+
+<button data-edge="right">
+→ Höger
+</button>
+
+
+</div>
+
+
+
+<br>
 
 
 Rundade hörn
 
+
 <br>
+
 
 <label>
 <input type="checkbox" id="tl">
 Övre vänster
 </label>
 
+
 <br>
+
 
 <label>
 <input type="checkbox" id="tr">
 Övre höger
 </label>
 
+
 <br>
+
 
 <label>
 <input type="checkbox" id="bl">
 Nedre vänster
 </label>
 
+
 <br>
+
 
 <label>
 <input type="checkbox" id="br">
@@ -445,11 +747,18 @@ Nedre höger
 </label>
 
 
-<br><br>
+<br>
 
 
-<button id="rotate">
-Rotera 90°
+<br>
+
+<button id="rotateBtn">
+↻ Rotera
+</button>
+
+
+<button id="deleteBtn">
+🗑 Radera
 </button>
 
 
@@ -457,44 +766,115 @@ Rotera 90°
 
 
 <label>
-<input type="checkbox" id="done">
+
+<input 
+type="checkbox"
+id="doneCheck"
+${d.done?"checked":""}
+>
+
 Klar
+
 </label>
+
+
+`
+:
+""
+}
+
+
 
 `;
 
 
 
-document.getElementById("len").onchange=e=>{
-
-d.length=parseInt(e.target.value);
-
-updateShape(group);
-
-};
 
 
-document.getElementById("dep").onchange=e=>{
-
-d.depth=parseInt(e.target.value);
-
-updateShape(group);
-
-};
-
-
-
-["tl","tr","bl","br"]
-.forEach(c=>{
-
-
-document.getElementById(c)
+document
+.getElementById("editLength")
 .onchange=e=>{
 
 
-d.corners[c]=e.target.checked;
+d.length =
+parseInt(e.target.value);
 
-updateShape(group);
+
+resizePart(group);
+
+
+};
+
+
+
+
+document
+.getElementById("editDepth")
+.onchange=e=>{
+
+
+d.depth =
+parseInt(e.target.value);
+
+
+resizePart(group);
+
+
+};
+
+
+
+
+
+
+if(d.type!=="wall"){
+
+
+
+document
+.getElementById("edgeSelect")
+.value=d.edgeProfile;
+
+
+
+document
+.getElementById("edgeSelect")
+.onchange=e=>{
+
+
+d.edgeProfile =
+e.target.value;
+
+
+drawEdges(group);
+
+
+};
+
+
+
+
+
+document
+.querySelectorAll("#edgeButtons button")
+.forEach(btn=>{
+
+
+btn.onclick=()=>{
+
+
+let side =
+btn.dataset.edge;
+
+
+
+d.edges[side]=
+!d.edges[side];
+
+
+
+drawEdges(group);
+
 
 };
 
@@ -504,15 +884,52 @@ updateShape(group);
 
 
 
-document.getElementById("rotate")
+
+["tl","tr","bl","br"]
+.forEach(c=>{
+
+
+document
+.getElementById(c)
+.checked =
+d.corners[c];
+
+
+
+document
+.getElementById(c)
+.onchange=e=>{
+
+
+d.corners[c]=
+e.target.checked;
+
+
+resizePart(group);
+
+
+};
+
+
+});
+
+
+
+
+
+
+document
+.getElementById("rotateBtn")
 .onclick=()=>{
 
 
 d.rotation+=90;
 
+
 group.rotation(
 d.rotation
 );
+
 
 
 };
@@ -520,13 +937,48 @@ d.rotation
 
 
 
-document.getElementById("done")
+
+document
+.getElementById("deleteBtn")
+.onclick=()=>{
+
+
+group.destroy();
+
+
+
+parts =
+parts.filter(
+p=>p!==group
+);
+
+
+
+selected=null;
+
+
+updateList();
+
+
+layer.draw();
+
+
+};
+
+
+
+
+
+document
+.getElementById("doneCheck")
 .onchange=e=>{
 
 
 d.done=e.target.checked;
 
+
 updateList();
+
 
 };
 
@@ -535,68 +987,368 @@ updateList();
 }
 
 
-
-// ---------------------------
-// SAVE / LOAD
-// ---------------------------
+}
 
 
-document.getElementById("saveProject")
+
+
+
+
+
+
+
+// =======================================
+// EDGE MARKERS
+// =======================================
+
+
+function drawEdges(group){
+
+
+
+let old =
+group.find(".edgeMarker");
+
+
+
+old.destroy();
+
+
+
+let rect =
+group.getChildren()[0];
+
+
+let d =
+rect.data;
+
+
+
+let size=10;
+
+
+
+function addArrow(x,y,rot){
+
+
+group.add(
+
+new Konva.RegularPolygon({
+
+name:"edgeMarker",
+
+x,
+
+y,
+
+sides:3,
+
+radius:size,
+
+rotation:rot,
+
+fill:"#1e293b"
+
+})
+
+);
+
+
+}
+
+
+
+if(d.edges.top){
+
+addArrow(
+rect.width()/2,
+0,
+0
+);
+
+}
+
+
+
+if(d.edges.bottom){
+
+addArrow(
+rect.width()/2,
+rect.height(),
+180
+);
+
+}
+
+
+
+if(d.edges.left){
+
+addArrow(
+0,
+rect.height()/2,
+270
+);
+
+}
+
+
+
+if(d.edges.right){
+
+addArrow(
+rect.width(),
+rect.height()/2,
+90
+);
+
+}
+
+
+layer.draw();
+
+
+}
+
+
+
+
+
+
+
+
+// =======================================
+// SAVE
+// =======================================
+
+
+document
+.getElementById("saveProject")
 .onclick=()=>{
 
 
-let save = items.map(g=>({
+let save =
+parts.map(p=>{
 
-data:g.getChildren()[0].data,
 
-x:g.x(),
+let d =
+p.getChildren()[0].data;
 
-y:g.y(),
 
-rotation:g.rotation()
 
-}));
+return {
+
+data:d,
+
+x:p.x(),
+
+y:p.y(),
+
+rotation:p.rotation()
+
+};
+
+
+});
+
 
 
 let blob =
 new Blob(
 [
-JSON.stringify(save)
+JSON.stringify(save,null,2)
 ],
 {
 type:"application/json"
-});
+}
+);
 
 
-let a=document.createElement("a");
 
-a.href=URL.createObjectURL(blob);
+let a =
+document.createElement("a");
 
-a.download="projekt.json";
+
+
+a.href =
+URL.createObjectURL(blob);
+
+
+
+a.download =
+"köksskiva.json";
+
 
 a.click();
+
+
 
 };
 
 
 
 
-// ---------------------------
-// RESIZE
-// ---------------------------
 
 
-window.addEventListener("resize",()=>{
 
 
-stage.width(container.clientWidth);
 
-stage.height(container.clientHeight);
+// =======================================
+// LOAD
+// =======================================
 
-stage.draw();
+
+document
+.getElementById("loadProject")
+.onclick=()=>{
+
+
+document
+.getElementById("fileInput")
+.click();
+
+
+};
+
+
+
+
+
+document
+.getElementById("fileInput")
+.onchange=e=>{
+
+
+let file =
+e.target.files[0];
+
+
+if(!file)return;
+
+
+
+let reader =
+new FileReader();
+
+
+
+reader.onload=()=>{
+
+
+let data =
+JSON.parse(reader.result);
+
+
+
+data.forEach(item=>{
+
+
+let old =
+item.data;
+
+
+
+addPart(old.type);
+
+
+let obj =
+parts[parts.length-1];
+
+
+obj.x(item.x);
+
+obj.y(item.y);
+
+obj.rotation(
+item.rotation
+);
+
+
+obj.getChildren()[0]
+.data=old;
+
+
+
+resizePart(obj);
+
 
 });
 
 
 
+};
+
+
+
+reader.readAsText(file);
+
+
+};
+
+
+
+
+
+
+
+
+
+// =======================================
+// EXPORT
+// =======================================
+
+
+document
+.getElementById("exportImage")
+.onclick=()=>{
+
+
+let temp =
+new Konva.Layer();
+
+
+temp.add(
+background.clone()
+);
+
+
+
+temp.add(
+layer.clone()
+);
+
+
+
+stage.add(temp);
+
+
+
+let img =
+stage.toDataURL({
+
+pixelRatio:2
+
 });
+
+
+
+temp.destroy();
+
+
+
+let a =
+document.createElement("a");
+
+
+a.href=img;
+
+
+a.download=
+"koksskiva.png";
+
+
+a.click();
+
+
+
+};
