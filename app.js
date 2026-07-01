@@ -95,8 +95,15 @@ function init() {
     if (data.id >= nextId) nextId = data.id + 1;
 
     const wall = isWallType(type);
-    const w = mmToPx(data.length);
-    const h = mmToPx(data.depth);
+
+const w = mmToPx(data.length);
+
+const h =
+type === "splash"
+?
+100
+:
+mmToPx(data.depth);
 
     const group = new Konva.Group({
       x: 220 + w / 2,
@@ -239,7 +246,13 @@ layer.draw();
   function resizePart(item) {
     const { rect, group, data, type } = item;
     const w = mmToPx(data.length);
-    const h = mmToPx(data.depth);
+
+const h =
+type === "splash"
+?
+100
+:
+mmToPx(data.depth);
 
     rect.width(w);
     rect.height(h);
