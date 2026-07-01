@@ -1,393 +1,319 @@
-```css
 /* ===============================
    KÖKSSKIVA RITVERKTYG
    MAIN STYLES
 ================================ */
 
-
-
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
-
-
 
 body {
-
-    margin: 0;
-    height: 100vh;
-
-    font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    background: #eef1f5;
-
-    color: #1e293b;
-
-    overflow: hidden;
+  margin: 0;
+  height: 100vh;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #eef1f5;
+  color: #1e293b;
+  overflow: hidden;
 }
-
-
-
-
 
 /* APP */
 
 .app {
-
-    height: 100vh;
-
-    display: flex;
-
-    flex-direction: column;
-
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
-
-
-
-
 
 /* ===============================
    TOP TOOLBAR
 ================================ */
 
-
 .toolbar {
-
-    height: 70px;
-
-    background: #ffffff;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    padding: 0 24px;
-
-    border-bottom: 1px solid #d9dee7;
-
-    box-shadow:
-        0 2px 10px rgba(0,0,0,0.06);
-
-    z-index: 10;
-
+  height: 70px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid #d9dee7;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  z-index: 10;
 }
-
-
 
 .brand h1 {
-
-    margin: 0;
-
-    font-size: 20px;
-
-    font-weight: 700;
-
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
 }
-
-
-
-
 
 .tools {
-
-    display: flex;
-
-    gap: 10px;
-
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
-
-
 
 button {
-
-    border: none;
-
-    background: #1e293b;
-
-    color: white;
-
-    padding: 10px 16px;
-
-    border-radius: 8px;
-
-    cursor: pointer;
-
-    font-size: 14px;
-
-    transition:
-        transform .15s ease,
-        background .15s ease;
-
+  border: none;
+  background: #1e293b;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: transform 0.15s ease, background 0.15s ease;
 }
-
-
 
 button:hover {
-
-    background: #334155;
-
-    transform: translateY(-1px);
-
+  background: #334155;
+  transform: translateY(-1px);
 }
-
-
 
 button:active {
-
-    transform: translateY(0);
-
+  transform: translateY(0);
 }
 
+button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
 
+#clearAll {
+  background: #fff;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
 
-
+#clearAll:hover {
+  background: #fef2f2;
+}
 
 /* ===============================
    MAIN WORKSPACE
 ================================ */
 
-
 .workspace {
-
-    flex: 1;
-
-    display: flex;
-
-    min-height: 0;
-
+  flex: 1;
+  display: flex;
+  min-height: 0;
 }
-
-
-
-
 
 /* CANVAS */
 
 .canvas-area {
-
-    flex: 1;
-
-    background:
-        linear-gradient(
-            90deg,
-            #e8edf3 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            #e8edf3 1px,
-            transparent 1px
-        );
-
-    background-size: 25px 25px;
-
-    position: relative;
-
-    overflow: hidden;
-
+  flex: 1;
+  background: linear-gradient(90deg, #e8edf3 1px, transparent 1px),
+    linear-gradient(#e8edf3 1px, transparent 1px);
+  background-size: 25px 25px;
+  position: relative;
+  overflow: hidden;
 }
-
-
-
-
 
 #canvas-container {
-
-    width: 100%;
-
-    height: 100%;
-
+  width: 100%;
+  height: 100%;
 }
-
-
-
-
 
 /* ===============================
    SIDE PANEL
 ================================ */
 
-
 .side-panel {
-
-    width: 330px;
-
-    background: #ffffff;
-
-    border-left: 1px solid #d9dee7;
-
-    padding: 20px;
-
-    overflow-y: auto;
-
+  width: 330px;
+  background: #ffffff;
+  border-left: 1px solid #d9dee7;
+  padding: 20px;
+  overflow-y: auto;
 }
-
-
-
-
 
 .side-panel h2 {
-
-    font-size: 15px;
-
-    margin-top: 0;
-
-    margin-bottom: 14px;
-
+  font-size: 15px;
+  margin-top: 0;
+  margin-bottom: 14px;
 }
-
-
-
-
 
 .object-list {
-
-    min-height: 80px;
-
-    background: #f8fafc;
-
-    border-radius: 10px;
-
-    padding: 10px;
-
-    margin-bottom: 25px;
-
+  min-height: 80px;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-
-
-
-
 
 .empty {
-
-    color: #64748b;
-
-    font-size: 13px;
-
+  color: #64748b;
+  font-size: 13px;
+  margin: 6px;
 }
 
+.object-item {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
 
+.object-item:hover {
+  border-color: #94a3b8;
+}
 
-
+.object-item.selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
 
 /* PROPERTY AREA */
 
 .properties {
-
-    padding-bottom: 25px;
-
-    border-bottom:
-
-        1px solid #e2e8f0;
-
+  padding-bottom: 25px;
+  border-bottom: 1px solid #e2e8f0;
 }
-
-
-
-
 
 #propertiesContent {
-
-    background: #f8fafc;
-
-    padding: 14px;
-
-    border-radius: 10px;
-
-    font-size: 14px;
-
+  background: #f8fafc;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 14px;
 }
 
+#propertiesContent h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
 
+#propertiesContent .field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  margin: 12px 0 4px;
+}
 
+#propertiesContent input[type="number"],
+#propertiesContent select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+  color: #1e293b;
+}
 
+#propertiesContent input[type="number"]:focus,
+#propertiesContent select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+#propertiesContent label {
+  display: block;
+  font-size: 13px;
+  margin: 6px 0;
+  cursor: pointer;
+}
+
+#propertiesContent label input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.edge-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.edge-btn {
+  background: #fff;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  font-size: 12px;
+  padding: 8px 6px;
+}
+
+.edge-btn:hover {
+  background: #f1f5f9;
+}
+
+.edge-btn.active {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+.prop-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.prop-actions button {
+  flex: 1;
+  font-size: 13px;
+}
+
+.btn-danger {
+  background: #dc2626;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
+.done-label {
+  margin-top: 14px !important;
+  padding-top: 12px;
+  border-top: 1px dashed #cbd5e1;
+  font-weight: 600;
+}
 
 /* CHECKLIST */
 
 .checklist {
-
-    margin-top: 25px;
-
+  margin-top: 25px;
 }
-
-
 
 .checklist label {
-
-    display: block;
-
-    margin-bottom: 12px;
-
-    font-size: 14px;
-
-    cursor: pointer;
-
+  display: block;
+  margin-bottom: 12px;
+  font-size: 14px;
+  cursor: pointer;
 }
-
-
 
 .checklist input {
-
-    margin-right: 8px;
-
+  margin-right: 8px;
 }
-
-
-
-
 
 /* ===============================
    MOBILE BASIC SUPPORT
 ================================ */
 
+@media (max-width: 900px) {
+  .workspace {
+    flex-direction: column;
+  }
 
-@media(max-width:900px){
+  .side-panel {
+    width: 100%;
+    height: 280px;
+  }
 
+  .toolbar {
+    flex-direction: column;
+    height: auto;
+    padding: 15px;
+    gap: 12px;
+  }
 
-    .workspace {
-
-        flex-direction: column;
-
-    }
-
-
-    .side-panel {
-
-        width:100%;
-
-        height:280px;
-
-    }
-
-
-    .toolbar {
-
-        flex-direction:column;
-
-        height:auto;
-
-        padding:15px;
-
-        gap:12px;
-
-    }
-
-
-    .tools {
-
-        flex-wrap:wrap;
-
-        justify-content:center;
-
-    }
-
-
+  .tools {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
-```
