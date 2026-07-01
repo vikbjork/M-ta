@@ -163,50 +163,63 @@ function fitCanvas(){
  if(parts.length===0) return;
 
 
- let box=layer.getClientRect({
-  skipTransform:true
+ // lås kameran efter första placeringen
+ if(stage.getAttr("cameraLocked")){
+    return;
+ }
+
+
+ let box = layer.getClientRect({
+   skipTransform:true
  });
 
 
- let padding=120;
+ let padding = 120;
 
 
  let scaleX =
  stage.width() /
- (box.width+padding);
+ (box.width + padding);
 
 
  let scaleY =
  stage.height() /
- (box.height+padding);
+ (box.height + padding);
 
 
 
- let scale=Math.min(scaleX,scaleY,1);
+ let scale = Math.min(scaleX,scaleY,1);
 
 
 
  stage.scale({
-  x:scale,
-  y:scale
+   x:scale,
+   y:scale
  });
 
 
 
  stage.position({
 
- x:
- (stage.width()-box.width*scale)/2
- -
- box.x*scale,
+   x:
+   (stage.width()-box.width*scale)/2
+   -
+   box.x*scale,
 
 
- y:
- (stage.height()-box.height*scale)/2
- -
- box.y*scale
+   y:
+   (stage.height()-box.height*scale)/2
+   -
+   box.y*scale
 
  });
+
+
+
+ stage.setAttr(
+   "cameraLocked",
+   true
+ );
 
 
  stage.batchDraw();
@@ -523,7 +536,10 @@ group.on("dragmove",()=>{
 layer.add(group);
 
 
-fitCanvas();
+// bara första gången
+if(parts.length === 1){
+    fitCanvas();
+}
 
 
 layer.draw();
