@@ -178,7 +178,7 @@ mmToPx(data.depth);
 
 function deselectAll(){
 
-  allSelected = false;
+
 
   parts.forEach((p)=>{
 
@@ -214,18 +214,23 @@ function deselectAll(){
     p.startY = p.group.y();
   });
 
-});  
- group.on("dragmove", () => {
+});
 
-  const dx = group.x() - group.startX;
-  const dy = group.y() - group.startY;
+
+group.on("dragmove",()=>{
 
 
   if(multiSelected.length > 1 && multiSelected.includes(item)){
 
+
+    const dx = group.x() - group.startX;
+    const dy = group.y() - group.startY;
+
+
     multiSelected.forEach(p=>{
 
       if(p === item) return;
+
 
       p.group.x(
         p.startX + dx
