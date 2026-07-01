@@ -252,13 +252,7 @@ group.add(edges);
 applyCorners(rect);
 
 
-texts[1].x(
-rect.width()+15
-);
-
-texts[1].y(
-rect.height()/2
-);
+updateMeasures(group);
 
 
 updateEdges(group);
