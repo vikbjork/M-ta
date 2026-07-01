@@ -1955,21 +1955,50 @@ document.getElementById("exportImage")
 .onclick=()=>{
 
 
-const uri =
-stage.toDataURL({
-pixelRatio:2
+const exportLayer = new Konva.Layer();
+
+
+const exportBg = new Konva.Rect({
+
+x:0,
+y:0,
+
+width:stage.width(),
+height:stage.height(),
+
+fill:"#ffffff",
+
+listening:false
+
 });
+
+
+exportLayer.add(exportBg);
+
+
+stage.add(exportLayer);
+
+
+// lägg bakgrunden längst bak
+exportLayer.moveToBottom();
+
+
+
+const uri = stage.toDataURL({
+    pixelRatio:2
+});
+
+
+
+exportLayer.destroy();
 
 
 
 const a=document.createElement("a");
 
-
 a.href=uri;
 
-
 a.download="koksskiva.png";
-
 
 a.click();
 
