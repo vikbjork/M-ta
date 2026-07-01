@@ -176,22 +176,9 @@ mmToPx(data.depth);
 
 
 
-function deselectAll(){
 
 
-
-  parts.forEach((p)=>{
-
-    p.rect.stroke("#1e293b");
-    p.rect.strokeWidth(2);
-
-  });
-
-
-  layer.draw();
-
-}
-    });
+  
 
     group.on("mouseenter", () => {
       if (item !== selected) rect.stroke("#64748b");
@@ -274,7 +261,7 @@ group.on("dragmove",()=>{
 
   layer.batchDraw();
 
-});
+
 
     layer.add(group);
 
