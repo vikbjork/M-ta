@@ -105,12 +105,16 @@ function init() {
       case "splash": return "Stänkskydd";
       case "sink": return "Diskho (urtag)";
       case "hob": return "Häll (urtag)";
+      case "faucet": return "Blandarhål (urtag)";
+      case "outlet": return "Uttag (urtag)";
       default: return "Vägg";
     }
   }
 
   function isWallType(type) { return type === "wall"; }
-  function isCutoutType(type) { return type === "sink" || type === "hob"; }
+  function isCutoutType(type) {
+    return type === "sink" || type === "hob" || type === "faucet" || type === "outlet";
+  }
   function isSlabType(type) { return type === "countertop" || type === "splash"; }
 
   function setCursor(c) { stage.container().style.cursor = c; }
@@ -120,6 +124,8 @@ function init() {
     if (type === "wall") { length = 1200; depth = 100; }
     if (type === "sink") { length = 800; depth = 500; }
     if (type === "hob") { length = 560; depth = 490; }
+    if (type === "faucet") { length = 40; depth = 40; }
+    if (type === "outlet") { length = 80; depth = 80; }
 
     return {
       id: nextId++,
@@ -256,7 +262,7 @@ function init() {
     const cutout = isCutoutType(type);
 
     const w = mmToPx(data.length);
-    const h = mmToPx(data.depth);
+    const h = type === "splash" ? SPLASH_VISUAL_H : mmToPx(data.depth);
 
     const group = new Konva.Group({
       x: 220 + w / 2,
@@ -292,7 +298,7 @@ function init() {
 
     if (cutout) {
       cutoutLabel = new Konva.Text({
-        text: type === "sink" ? "DISKHO" : "HÄLL",
+        text: { sink: "DISKHO", hob: "HÄLL", faucet: "BLANDARE", outlet: "UTTAG" }[type] || "",
         fontSize: 11,
         fontStyle: "bold",
         fill: "#dc2626",
@@ -422,7 +428,7 @@ function init() {
   function resizePart(item) {
     const { rect, group, data, type } = item;
     const w = mmToPx(data.length);
-    const h = mmToPx(data.depth);
+    const h = type === "splash" ? SPLASH_VISUAL_H : mmToPx(data.depth);
 
     rect.width(w);
     rect.height(h);
