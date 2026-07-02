@@ -3,40 +3,94 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Köksskiva Ritverktyg</title>
+  <title>Mätverktyg – Stenskivor.se</title>
   <link rel="stylesheet" href="style.css">
 
-  <!-- Konva -->
+  <!-- Konva (ritmotor) -->
   <script src="https://cdn.jsdelivr.net/npm/konva@9.3.18/konva.min.js"></script>
+  <!-- jsPDF (för mätunderlag som PDF) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
   <div class="app">
 
+    <!-- ============ TOPPBAR ============ -->
     <header class="toolbar">
       <div class="brand">
-        <h1>Köksskiva Ritverktyg</h1>
+        <span class="brand-mark">S</span>
+        <div>
+          <h1>Mätverktyg</h1>
+          <p class="brand-sub">Stenskivor.se</p>
+        </div>
       </div>
 
       <div class="tools">
-        <button id="undoBtn">↶ Ångra</button>
-        <button id="addCountertop" title="Lägg till en ny bänkskiva">+ Bänkskiva</button>
-        <button id="addSplash" title="Lägg till ett nytt stänkskydd">+ Stänkskydd</button>
-        <button id="addWall" title="Lägg till en vägglinje">+ Vägg</button>
+        <div class="tool-group">
+          <button id="addCountertop" title="Lägg till en ny bänkskiva">+ Bänkskiva</button>
+          <button id="addSplash" title="Lägg till ett nytt stänkskydd">+ Stänkskydd</button>
+          <button id="addWall" title="Lägg till en vägglinje">+ Vägg</button>
+          <button id="addSink" title="Lägg till urtag för diskho">+ Diskho</button>
+          <button id="addHob" title="Lägg till urtag för häll">+ Häll</button>
+        </div>
 
-        <button id="saveProject" title="Spara ritningen som en fil">💾 Spara</button>
-        <button id="loadProject" title="Öppna en tidigare sparad ritning">📂 Öppna</button>
-        <input type="file" id="fileInput" accept=".json" hidden>
+        <div class="tool-group">
+          <button id="undoBtn" title="Ångra (Ctrl+Z)">↺ Ångra</button>
+          <button id="clearAll" title="Ta bort alla objekt">🧹 Rensa allt</button>
+        </div>
 
-        <button id="exportImage" title="Exportera ritningen som en bild">🖼 Exportera bild</button>
-        <button id="clearAll" title="Ta bort alla objekt från ritningen">🧹 Rensa allt</button>
+        <div class="tool-group">
+          <button id="saveProject" title="Spara ritningen som en fil">💾 Spara</button>
+          <button id="loadProject" title="Öppna en tidigare sparad ritning">📂 Öppna</button>
+          <input type="file" id="fileInput" accept=".json" hidden>
+        </div>
+
+        <div class="tool-group">
+          <button id="exportImage" title="Exportera ritningen som en bild">🖼 Bild</button>
+          <button id="exportPdf" title="Exportera komplett mätunderlag som PDF" class="btn-primary">📄 PDF-underlag</button>
+          <button id="printBtn" title="Skriv ut">🖨 Skriv ut</button>
+        </div>
       </div>
     </header>
 
+    <!-- ============ PROJEKT / KUNDUPPGIFTER ============ -->
+    <section class="project-bar" id="projectBar">
+      <div class="project-field">
+        <label for="customerName">Kund</label>
+        <input id="customerName" type="text" placeholder="Namn">
+      </div>
+      <div class="project-field">
+        <label for="customerAddress">Adress</label>
+        <input id="customerAddress" type="text" placeholder="Gata, ort">
+      </div>
+      <div class="project-field">
+        <label for="customerPhone">Telefon</label>
+        <input id="customerPhone" type="text" placeholder="07X-XXX XX XX">
+      </div>
+      <div class="project-field">
+        <label for="projectDate">Datum</label>
+        <input id="projectDate" type="date">
+      </div>
+      <div class="project-field">
+        <label for="projectRef">Referens / ordernr</label>
+        <input id="projectRef" type="text" placeholder="T.ex. 2026-0142">
+      </div>
+      <button id="toggleProjectBar" class="link-btn" title="Dölj/visa kunduppgifter">Dölj ▲</button>
+    </section>
+
+    <!-- ============ ARBETSYTA ============ -->
     <main class="workspace">
 
       <section class="canvas-area">
         <div id="canvas-container"></div>
+
+        <div class="zoom-controls">
+          <button id="zoomInBtn" title="Zooma in">+</button>
+          <button id="zoomOutBtn" title="Zooma ut">−</button>
+          <button id="zoomFitBtn" title="Zooma till allt">⤢</button>
+        </div>
+
+        <div class="canvas-hint">Håll <kbd>Mellanslag</kbd> + dra för att panorera · Scrolla för att zooma</div>
       </section>
 
       <aside class="side-panel">
@@ -46,6 +100,10 @@
           <div id="objectList" class="object-list">
             <p class="empty">Inga objekt ännu</p>
           </div>
+        </section>
+
+        <section class="summary" id="summaryBox">
+          <!-- fylls av app.js -->
         </section>
 
         <section class="properties">
@@ -58,25 +116,10 @@
         <section class="checklist">
           <h2>Offertkontroll</h2>
 
-          <label>
-            <input type="checkbox">
-            Alla mått kontrollerade
-          </label>
-
-          <label>
-            <input type="checkbox">
-            Alla kantprofiler valda
-          </label>
-
-          <label>
-            <input type="checkbox">
-            Alla hörn kontrollerade
-          </label>
-
-          <label>
-            <input type="checkbox">
-            Redo för offert
-          </label>
+          <label><input type="checkbox" id="check1"> Alla mått kontrollerade</label>
+          <label><input type="checkbox" id="check2"> Alla kantprofiler valda</label>
+          <label><input type="checkbox" id="check3"> Diskho & häll markerade</label>
+          <label><input type="checkbox" id="check4"> Redo för offert</label>
         </section>
 
       </aside>
