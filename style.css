@@ -1,7 +1,18 @@
 /* ===============================
-   KÖKSSKIVA RITVERKTYG
+   MÄTVERKTYG – STENSKIVOR.SE
    MAIN STYLES
 ================================ */
+
+:root {
+  --brand: #18b68c;
+  --brand-dark: #129e79;
+  --brand-light: #e6f8f3;
+  --ink: #1e293b;
+  --muted: #64748b;
+  --border: #d9dee7;
+  --danger: #dc2626;
+  --bg: #eef1f5;
+}
 
 * {
   box-sizing: border-box;
@@ -11,12 +22,10 @@ body {
   margin: 0;
   height: 100vh;
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #eef1f5;
-  color: #1e293b;
+  background: var(--bg);
+  color: var(--ink);
   overflow: hidden;
 }
-
-/* APP */
 
 .app {
   height: 100vh;
@@ -29,38 +38,82 @@ body {
 ================================ */
 
 .toolbar {
-  height: 70px;
+  min-height: 64px;
   background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  border-bottom: 1px solid #d9dee7;
+  padding: 10px 24px;
+  border-bottom: 1px solid var(--border);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-  z-index: 10;
+  z-index: 20;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--brand);
+  color: #fff;
+  font-weight: 800;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .brand h1 {
   margin: 0;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
+  line-height: 1.1;
+}
+
+.brand-sub {
+  margin: 0;
+  font-size: 12px;
+  color: var(--brand-dark);
+  font-weight: 600;
 }
 
 .tools {
   display: flex;
-  gap: 10px;
+  gap: 16px;
   flex-wrap: wrap;
+}
+
+.tool-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-right: 16px;
+  border-right: 1px solid var(--border);
+}
+
+.tool-group:last-child {
+  border-right: none;
+  padding-right: 0;
 }
 
 button {
   border: none;
-  background: #1e293b;
+  background: var(--ink);
   color: white;
-  padding: 10px 16px;
+  padding: 9px 14px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
   transition: transform 0.15s ease, background 0.15s ease;
+  white-space: nowrap;
 }
 
 button:hover {
@@ -73,13 +126,21 @@ button:active {
 }
 
 button:focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid var(--brand);
   outline-offset: 2px;
+}
+
+.btn-primary {
+  background: var(--brand);
+}
+
+.btn-primary:hover {
+  background: var(--brand-dark);
 }
 
 #clearAll {
   background: #fff;
-  color: #b91c1c;
+  color: var(--danger);
   border: 1px solid #fecaca;
 }
 
@@ -87,8 +148,70 @@ button:focus-visible {
   background: #fef2f2;
 }
 
+.link-btn {
+  background: none;
+  color: var(--muted);
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.link-btn:hover {
+  background: #f1f5f9;
+  color: var(--ink);
+  transform: none;
+}
+
 /* ===============================
-   MAIN WORKSPACE
+   PROJECT / CUSTOMER BAR
+================================ */
+
+.project-bar {
+  background: var(--brand-light);
+  border-bottom: 1px solid #bfe9dd;
+  padding: 10px 24px;
+  display: flex;
+  gap: 18px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  z-index: 15;
+}
+
+.project-bar.collapsed {
+  display: none;
+}
+
+.project-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 140px;
+}
+
+.project-field label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brand-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.project-field input {
+  padding: 7px 9px;
+  border: 1px solid #bfe9dd;
+  border-radius: 6px;
+  font-size: 13px;
+  background: #fff;
+  color: var(--ink);
+}
+
+.project-field input:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(24, 182, 140, 0.15);
+}
+
+/* ===============================
+   WORKSPACE
 ================================ */
 
 .workspace {
@@ -96,8 +219,6 @@ button:focus-visible {
   display: flex;
   min-height: 0;
 }
-
-/* CANVAS */
 
 .canvas-area {
   flex: 1;
@@ -113,37 +234,88 @@ button:focus-visible {
   height: 100%;
 }
 
+.zoom-controls {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 5;
+}
+
+.zoom-controls button {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--ink);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.zoom-controls button:hover {
+  background: var(--brand);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.canvas-hint {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  font-size: 11px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.85);
+  padding: 5px 10px;
+  border-radius: 6px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.canvas-hint kbd {
+  background: #e2e8f0;
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-family: inherit;
+  font-size: 11px;
+}
+
 /* ===============================
    SIDE PANEL
 ================================ */
 
 .side-panel {
-  width: 330px;
+  width: 340px;
   background: #ffffff;
-  border-left: 1px solid #d9dee7;
+  border-left: 1px solid var(--border);
   padding: 20px;
   overflow-y: auto;
 }
 
 .side-panel h2 {
-  font-size: 15px;
+  font-size: 14px;
   margin-top: 0;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
+  color: var(--ink);
 }
 
 .object-list {
-  min-height: 80px;
+  min-height: 70px;
   background: #f8fafc;
   border-radius: 10px;
   padding: 10px;
-  margin-bottom: 25px;
+  margin-bottom: 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
 .empty {
-  color: #64748b;
+  color: var(--muted);
   font-size: 13px;
   margin: 6px;
 }
@@ -163,15 +335,72 @@ button:focus-visible {
 }
 
 .object-item.selected {
-  border-color: #2563eb;
-  background: #eff6ff;
+  border-color: var(--brand);
+  background: var(--brand-light);
+}
+
+.object-item .obj-meta {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.object-item .tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+  background: var(--brand-light);
+  color: var(--brand-dark);
+}
+
+.object-item .tag.cutout {
+  background: #fee2e2;
+  color: var(--danger);
+}
+
+/* SUMMARY */
+
+.summary {
+  background: var(--brand-light);
+  border: 1px solid #bfe9dd;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+
+.summary h3 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--brand-dark);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+
+.summary-total {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #bfe9dd;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
 }
 
 /* PROPERTY AREA */
 
 .properties {
-  padding-bottom: 25px;
+  padding-bottom: 20px;
   border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 20px;
 }
 
 #propertiesContent {
@@ -195,6 +424,7 @@ button:focus-visible {
 }
 
 #propertiesContent input[type="number"],
+#propertiesContent input[type="text"],
 #propertiesContent select {
   width: 100%;
   padding: 8px 10px;
@@ -202,14 +432,14 @@ button:focus-visible {
   border-radius: 6px;
   font-size: 14px;
   background: #fff;
-  color: #1e293b;
+  color: var(--ink);
 }
 
-#propertiesContent input[type="number"]:focus,
+#propertiesContent input:focus,
 #propertiesContent select:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(24, 182, 140, 0.15);
 }
 
 #propertiesContent label {
@@ -223,29 +453,33 @@ button:focus-visible {
   margin-right: 8px;
 }
 
-.edge-buttons {
+.edge-buttons,
+.corner-buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 6px;
   margin-bottom: 4px;
 }
 
-.edge-btn {
+.edge-buttons button,
+.corner-buttons button {
   background: #fff;
-  color: #1e293b;
+  color: var(--ink);
   border: 1px solid #cbd5e1;
   font-size: 12px;
   padding: 8px 6px;
 }
 
-.edge-btn:hover {
+.edge-buttons button:hover,
+.corner-buttons button:hover {
   background: #f1f5f9;
 }
 
-.edge-btn.active {
-  background: #2563eb;
+.edge-buttons button.active,
+.corner-buttons button.active {
+  background: var(--brand);
   color: #fff;
-  border-color: #2563eb;
+  border-color: var(--brand);
 }
 
 .prop-actions {
@@ -260,22 +494,11 @@ button:focus-visible {
 }
 
 .btn-danger {
-  background: #dc2626;
+  background: var(--danger);
 }
 
 .btn-danger:hover {
   background: #b91c1c;
-}
-
-.hint {
-  font-size: 12px;
-  color: #64748b;
-  background: #eff6ff;
-  border: 1px solid #dbeafe;
-  border-radius: 6px;
-  padding: 8px 10px;
-  margin-top: 12px;
-  line-height: 1.4;
 }
 
 .done-label {
@@ -285,11 +508,18 @@ button:focus-visible {
   font-weight: 600;
 }
 
-/* CHECKLIST */
-
-.checklist {
-  margin-top: 25px;
+.hint {
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--brand-light);
+  border: 1px solid #bfe9dd;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-top: 12px;
+  line-height: 1.4;
 }
+
+/* CHECKLIST */
 
 .checklist label {
   display: block;
@@ -303,6 +533,30 @@ button:focus-visible {
 }
 
 /* ===============================
+   PRINT
+================================ */
+
+@media print {
+  .toolbar,
+  .project-bar .link-btn,
+  .side-panel,
+  .zoom-controls,
+  .canvas-hint {
+    display: none !important;
+  }
+
+  .workspace,
+  .canvas-area {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  body {
+    overflow: visible;
+  }
+}
+
+/* ===============================
    MOBILE BASIC SUPPORT
 ================================ */
 
@@ -313,18 +567,20 @@ button:focus-visible {
 
   .side-panel {
     width: 100%;
-    height: 280px;
+    height: 320px;
   }
 
   .toolbar {
     flex-direction: column;
-    height: auto;
-    padding: 15px;
-    gap: 12px;
+    align-items: stretch;
   }
 
   .tools {
-    flex-wrap: wrap;
     justify-content: center;
+  }
+
+  .project-bar {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
